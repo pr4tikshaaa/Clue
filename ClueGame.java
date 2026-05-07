@@ -10,7 +10,8 @@ import java.util.*;
 public class ClueGame 
 {
     private static final String HOME_NAME = "Home";
-    private static final String PLAYERSETUP_NAME = "Player Setup";
+    private static final String NUM_PLAYERS = "Num of players";
+    private static final String CHOOSE_PLAYERS = "Player Setup";
     //private static final String MAINBOARD_NAME = "Main Baoard";
     private JFrame myFrame;
    private JPanel theContainer; //to hold the different pages
@@ -25,7 +26,7 @@ public class ClueGame
         theCardLayout = new CardLayout();
         theContainer = new JPanel(theCardLayout);
         theContainer.add(homeScreen(), HOME_NAME);
-        theContainer.add(playerSetupScreen(), PLAYERSETUP_NAME);
+        theContainer.add(playerSetupScreen(), NUM_PLAYERS);
 
         myFrame.add(theContainer);
         myFrame.setVisible(true);
@@ -37,7 +38,7 @@ public class ClueGame
         JLabel title = new JLabel("CLUE");
         title.setFont(new Font("Serif", Font.BOLD, 70));
         JButton startBtn = new JButton("Start Game");
-        startBtn.addActionListener(e -> theCardLayout.show(theContainer, PLAYERSETUP_NAME));
+        startBtn.addActionListener(e -> theCardLayout.show(theContainer, NUM_PLAYERS));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -51,15 +52,22 @@ public class ClueGame
    {
         JPanel playerPanel = new JPanel(new GridBagLayout());
         JLabel title1 = new JLabel("How many players?");
-        String[] numPlayers = {"2", "3", "4", "5", "6"};
+
+        String[] numPlayers = { "3", "4", "5", "6"};
         JComboBox<String> players = new JComboBox<>(numPlayers);
+        
+        JButton nextBtn = new JButton("Choose Characters →");
+
         GridBagConstraints gbc = new GridBagConstraints();
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         playerPanel.add(title1, gbc);
         gbc.gridy = 1;
-        gbc.insets = new Insets(20, 0, 0, 0);
         playerPanel.add(players, gbc);
+        gbc.gridy = 2; 
+        playerPanel.add(nextBtn, gbc);
+
         return playerPanel;
        }
 
