@@ -13,6 +13,8 @@ public class UIClueGame
     private static final String NUM_PLAYERS = "Num of players";
     private static final String CHOOSE_PLAYERS = "Player Setup";
     //private static final String MAINBOARD_NAME = "Main Baoard";
+    private String numPlayers;
+    private JLabel numPlayersLabel;
     private JFrame myFrame;
     private JPanel theContainer; //to hold the different pages
     private CardLayout theCardLayout;
@@ -59,6 +61,10 @@ public class UIClueGame
         
         JButton nextBtn = new JButton("Choose Characters →");
         nextBtn.addActionListener(e -> theCardLayout.show(theContainer, CHOOSE_PLAYERS));
+        nextBtn.addActionListener(e -> {
+          this.numPlayers = (String)players.getSelectedItem();
+          numPlayersLabel.setText(this.numPlayers); //for debuging
+          });
         GridBagConstraints gbc = new GridBagConstraints();
 
         gbc.gridx = 0;
@@ -74,6 +80,9 @@ public class UIClueGame
      private JPanel chooseCharacters()
      {
           JPanel charactersPanel = new JPanel(new GridBagLayout());
+          numPlayersLabel = new JLabel (numPlayers); //to store total number of players
+
+          charactersPanel.add(numPlayersLabel);
           return charactersPanel;
      }
 
