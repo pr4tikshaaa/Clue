@@ -24,6 +24,10 @@ public class GameManager {
         return players.get(currentPlayerIndex);
     }
 
+    public int getCurrentPlayerIndex() {
+        return currentPlayerIndex;
+    }
+
     public int getNextTurn() {
         return (currentPlayerIndex + 1) % players.size();
     }
@@ -37,7 +41,7 @@ public class GameManager {
     }
 
     public String makeAccusation(Card suspectGuess, Card weaponGuess, Card roomGuess) {
-        String result = "Suspect guess: " + suspectGuess.getName() + "\nWeapon guess: " + weaponGuess.getName() + "\nRoom guess: " + roomGuess.getName();
+        String result = "Suspect accusation: " + suspectGuess.getName() + "\nWeapon accusation: " + weaponGuess.getName() + "\nRoom accusation: " + roomGuess.getName();
         CaseFile caseFile = cardDeck.getCaseFile();
         result += "\nAccusation is ";
         if (caseFile.isCorrect(suspectGuess, weaponGuess, roomGuess)) {
@@ -46,6 +50,28 @@ public class GameManager {
             result += "incorrect";
         }
         return result;
+    }
+
+    public String makeSuggestion(Card suspectGuess, Card weaponGuess, Card roomGuess) {
+        String result = "\nSuspect suggestion: " + suspectGuess.getName() + "\nWeapon suggestion: " + weaponGuess.getName() + "\nRoom suggestion: " + roomGuess.getName();
+
+        for (int i = currentPlayerIndex + 1; i < players.size(); i++) {
+            for (Card c : players.get(i).getHand()) {
+                if (c.equals(suspectGuess) || c.equals(weaponGuess) || c.equals(roomGuess)) {
+                    return result + "\nCard is in play. Pass to Player " + (i+1);
+                }
+            }
+        }
+
+        for (int i = 0; i < currentPlayerIndex; i++) {
+            for (Card c : players.get(i).getHand()) {
+                if (c.equals(suspectGuess) || c.equals(weaponGuess) || c.equals(roomGuess)) {
+                    return result + "\nCard is in play. Pass to Player " + (i+1);
+                }
+            }
+        }
+
+        return result + "\nCard is not found.";
     }
     
     public int rollDice() {
@@ -71,7 +97,6 @@ public class GameManager {
         current.setRoom();
         System.out.println("Moved to position " + current.getPosition());
         System.out.println("\nPlayer " + (currentPlayerIndex + 1) + " is in the " + players.get(currentPlayerIndex).getCurrentRoom());
-        setNextTurn();
     }
 
 }

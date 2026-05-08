@@ -38,6 +38,15 @@ public class Player {
         hand.add(card);
     }
 
+    public boolean hasCard(Card c) {
+        for (Card card : hand) {
+            if (c.equals(card)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public int getPosition() {
         return position;
     }

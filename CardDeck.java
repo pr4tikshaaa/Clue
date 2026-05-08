@@ -18,7 +18,7 @@ public class CardDeck {
         String weapon = "weapon";
         String room = "room";
 
-        orderedDeck.add(new Card(suspect, "Miss Scarlett"));
+        orderedDeck.add(new Card(suspect, "Miss Scarlet"));
         orderedDeck.add(new Card(suspect, "Colonel Mustard"));
         orderedDeck.add(new Card(suspect, "Dr. Orchid"));
         orderedDeck.add(new Card(suspect, "Mr. Green"));
