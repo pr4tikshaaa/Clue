@@ -29,8 +29,20 @@ public class ClueLauncher {
 
         System.out.println("Case file: " + game.getCaseFile());
 
-        System.out.println("\nRolling dice for Player 1:");
-        players.get(0).rollDice();
+/*         System.out.println("\nRolling die for Player 1:");
+        game.rollDice(); */
 
+        System.out.println("\nChecking Player 1's accusation:");
+        Card suspectCard = new Card("suspect", "Miss Scarlet");
+        Card weaponCard = new Card("weapon", "Candlestick");
+        Card roomCard = new Card("room", "Conservatory");
+        System.out.println(game.makeAccusation(suspectCard, weaponCard, roomCard));
+
+        game.takeTurn();
+        game.takeTurn();
+        game.takeTurn();
+        game.takeTurn();
+        game.takeTurn();
+        game.takeTurn();
     }
 }

@@ -27,4 +27,8 @@ public class Card {
             return false;
         }
     }
+
+    public int hashcode() {
+        return type.hashCode() + name.hashCode();
+    }
 }

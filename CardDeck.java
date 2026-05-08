@@ -4,10 +4,43 @@ import java.util.Stack;
 
 public class CardDeck {
     private Stack<Card> cardDeck;
+    private ArrayList<Card> orderedDeck;
     private CaseFile caseFile;
+/*  private ArrayList<Card> suspectCards;
+    private ArrayList<Card> weaponCards;
+    private ArrayList<Card> roomCards; */
 
     public CardDeck() {
         cardDeck = new Stack<>();
+        orderedDeck = new ArrayList<>();
+
+        String suspect = "suspect";
+        String weapon = "weapon";
+        String room = "room";
+
+        orderedDeck.add(new Card(suspect, "Miss Scarlett"));
+        orderedDeck.add(new Card(suspect, "Colonel Mustard"));
+        orderedDeck.add(new Card(suspect, "Dr. Orchid"));
+        orderedDeck.add(new Card(suspect, "Mr. Green"));
+        orderedDeck.add(new Card(suspect, "Mrs. Peacock"));
+        orderedDeck.add(new Card(suspect, "Professor Plum"));
+
+        orderedDeck.add(new Card(weapon, "Candlestick"));
+        orderedDeck.add(new Card(weapon, "Dagger"));
+        orderedDeck.add(new Card(weapon, "Lead pipe"));
+        orderedDeck.add(new Card(weapon, "Revolver"));
+        orderedDeck.add(new Card(weapon, "Rope"));
+        orderedDeck.add(new Card(weapon, "Wrench"));
+
+        orderedDeck.add(new Card(room, "Ballroom"));
+        orderedDeck.add(new Card(room, "Billiard Room"));
+        orderedDeck.add(new Card(room, "Conservatory"));
+        orderedDeck.add(new Card(room, "Dining Room"));
+        orderedDeck.add(new Card(room, "Hall"));
+        orderedDeck.add(new Card(room, "Kitchen"));
+        orderedDeck.add(new Card(room, "Library"));
+        orderedDeck.add(new Card(room, "Lounge"));
+        orderedDeck.add(new Card(room, "Study"));
 
         initializeDeck();
         shuffle();
@@ -15,33 +48,18 @@ public class CardDeck {
     }
 
     public void initializeDeck() {
-        String suspect = "suspect";
-        String weapon = "weapon";
-        String room = "room";
+        for (Card c : orderedDeck) {
+            cardDeck.push(c);
+        }
+    }
 
-        cardDeck.push(new Card(suspect, "Miss Scarlett"));
-        cardDeck.push(new Card(suspect, "Colonel Mustard"));
-        cardDeck.push(new Card(suspect, "Dr. Orchid"));
-        cardDeck.push(new Card(suspect, "Mr. Green"));
-        cardDeck.push(new Card(suspect, "Mrs. Peacock"));
-        cardDeck.push(new Card(suspect, "Professor Plum"));
-
-        cardDeck.push(new Card(weapon, "Candlestick"));
-        cardDeck.push(new Card(weapon, "Dagger"));
-        cardDeck.push(new Card(weapon, "Lead pipe"));
-        cardDeck.push(new Card(weapon, "Revolver"));
-        cardDeck.push(new Card(weapon, "Rope"));
-        cardDeck.push(new Card(weapon, "Wrench"));
-
-        cardDeck.push(new Card(room, "Ballroom"));
-        cardDeck.push(new Card(room, "Billiard Room"));
-        cardDeck.push(new Card(room, "Conservatory"));
-        cardDeck.push(new Card(room, "Dining Room"));
-        cardDeck.push(new Card(room, "Hall"));
-        cardDeck.push(new Card(room, "Kitchen"));
-        cardDeck.push(new Card(room, "Library"));
-        cardDeck.push(new Card(room, "Lounge"));
-        cardDeck.push(new Card(room, "Study"));
+    public Card getCard(String name) {
+        for (int i = 0; i < orderedDeck.size(); i++) {
+            if (name.equals(orderedDeck.get(i).getName())) {
+                return orderedDeck.get(i);
+            }
+        }
+        return null;
     }
 
     public void shuffle() {
@@ -112,5 +130,4 @@ public class CardDeck {
     public CaseFile getCaseFile() {
         return caseFile;
     }
-
 }
