@@ -34,7 +34,7 @@ public class ClueLauncher {
 
         Card suspectCard = new Card("suspect", "Miss Scarlet");
         Card weaponCard = new Card("weapon", "Candlestick");
-        Card roomCard = new Card("room", "Conservatory");
+        //Card roomCard = new Card("room", "Conservatory");
 
         game.takeTurn();
         System.out.println("\nChecking Player " + (game.getCurrentPlayerIndex() + 1) + "'s suggestion:");
@@ -54,5 +54,10 @@ public class ClueLauncher {
         System.out.println("\nPlayer " + (game.getCurrentPlayerIndex() + 1) + " made a suggestion:");
         System.out.println(game.makeSuggestion(new Card("suspect", "Miss Peacock"), new Card("weapon", "Revolver")));
         game.setNextTurn();
+
+        Board board = new Board();
+        board.printBoard();
+        System.out.println(board.getRoom(0, 0));
+        System.out.println(board.getRoom(0, 2));
     }
 }

@@ -96,7 +96,7 @@ public class GameManager {
         System.out.println("\nPlayer " + (currentPlayerIndex + 1) + " (" + current.getCharacterName() + ")'s turn:");
         int steps = rollDice();
         movePlayer(steps);
-        current.setRoom();
+        //current.setRoom();
         System.out.println("Moved to position " + current.getPosition());
         System.out.println("\nPlayer " + (currentPlayerIndex + 1) + " is in the " + players.get(currentPlayerIndex).getCurrentRoom());
     }

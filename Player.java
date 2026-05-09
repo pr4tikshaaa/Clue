@@ -6,16 +6,18 @@ public class Player {
     private ArrayList<Card> hand;
     private int position;
     private String currentRoom;
-    private int roomCount;
-//    private GameManager game;
+    private int xPos;
+    private int yPos;
+    // private int roomCount;
+    // private GameManager game;
     
     public Player(String playerName, String characterName) {
         this.playerName = playerName;
         this.characterName = characterName;
         hand = new ArrayList<>();
         position = 0;
-        roomCount = 0;
-        currentRoom = "open";
+        // roomCount = 0;
+        currentRoom = "Walkway";
     }
 
     public String getPlayerName() {
@@ -59,7 +61,20 @@ public class Player {
         return currentRoom;
     }
 
-    public String setRoom() {
+    public int getXPos() {
+        return xPos;
+    }
+
+    public int getYPos() {
+        return yPos;
+    }
+
+    public void setPositon(int x, int y) {
+        xPos = x;
+        yPos = y;
+    }
+
+/*     public String setRoom() {
         roomCount++;
         if (roomCount == 1) {
             this.currentRoom = "Ballroom";
@@ -86,5 +101,5 @@ public class Player {
 
     public int getRoomCount() {
         return roomCount;
-    }
+    } */
 }
