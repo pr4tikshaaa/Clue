@@ -32,15 +32,16 @@ public class ClueLauncher {
 /*         System.out.println("\nRolling die for Player 1:");
         game.rollDice(); */
 
-        game.takeTurn();
-
-        System.out.println("\nChecking Player " + (game.getCurrentPlayerIndex() + 1) + "'s accusation:");
         Card suspectCard = new Card("suspect", "Miss Scarlet");
         Card weaponCard = new Card("weapon", "Candlestick");
         Card roomCard = new Card("room", "Conservatory");
-        System.out.println(game.makeAccusation(suspectCard, weaponCard, roomCard));
 
+        game.takeTurn();
+        System.out.println("\nChecking Player " + (game.getCurrentPlayerIndex() + 1) + "'s suggestion:");
+        System.out.println(game.makeSuggestion(suspectCard, weaponCard));
         game.setNextTurn();
+        System.out.println("\nChecking Player " + (game.getCurrentPlayerIndex() + 1) + "'s suggestion:");
+        System.out.println(game.makeSuggestion(new Card("suspect", "Colonel Mustard"), new Card("weapon", "Wrench")));
         game.takeTurn();
         game.setNextTurn();
         game.takeTurn();
@@ -51,7 +52,7 @@ public class ClueLauncher {
         game.setNextTurn();
         game.takeTurn();
         System.out.println("\nPlayer " + (game.getCurrentPlayerIndex() + 1) + " made a suggestion:");
-        System.out.println(game.makeSuggestion(suspectCard, weaponCard, roomCard));
+        System.out.println(game.makeSuggestion(new Card("suspect", "Miss Peacock"), new Card("weapon", "Revolver")));
         game.setNextTurn();
     }
 }

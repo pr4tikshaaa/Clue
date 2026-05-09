@@ -15,10 +15,12 @@ public class Card {
         return type;
     }
 
+    @Override
     public String toString() {
         return name + " (" + type + ")";
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Card) {
             Card other = (Card) obj;
@@ -28,7 +30,8 @@ public class Card {
         }
     }
 
-    public int hashcode() {
+    @Override
+    public int hashCode() {
         return type.hashCode() + name.hashCode();
     }
 }

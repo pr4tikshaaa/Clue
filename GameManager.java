@@ -52,12 +52,14 @@ public class GameManager {
         return result;
     }
 
-    public String makeSuggestion(Card suspectGuess, Card weaponGuess, Card roomGuess) {
-        String result = "\nSuspect suggestion: " + suspectGuess.getName() + "\nWeapon suggestion: " + weaponGuess.getName() + "\nRoom suggestion: " + roomGuess.getName();
+    public String makeSuggestion(Card suspectGuess, Card weaponGuess) {
+        String room = players.get(currentPlayerIndex).getCurrentRoom();
+        Card roomCard = new Card("room", room);
+        String result = "\nSuspect suggestion: " + suspectGuess.getName() + "\nWeapon suggestion: " + weaponGuess.getName() + "\nRoom suggestion: " + room;
 
         for (int i = currentPlayerIndex + 1; i < players.size(); i++) {
             for (Card c : players.get(i).getHand()) {
-                if (c.equals(suspectGuess) || c.equals(weaponGuess) || c.equals(roomGuess)) {
+                if (c.equals(suspectGuess) || c.equals(weaponGuess) || c.equals(roomCard)) {
                     return result + "\nCard is in play. Pass to Player " + (i+1);
                 }
             }
@@ -65,7 +67,7 @@ public class GameManager {
 
         for (int i = 0; i < currentPlayerIndex; i++) {
             for (Card c : players.get(i).getHand()) {
-                if (c.equals(suspectGuess) || c.equals(weaponGuess) || c.equals(roomGuess)) {
+                if (c.equals(suspectGuess) || c.equals(weaponGuess) || c.equals(room)) {
                     return result + "\nCard is in play. Pass to Player " + (i+1);
                 }
             }
