@@ -4,6 +4,11 @@ import java.awt.event.*;
 import java.util.*;
 
 /**
+ * TODO: choosing characters
+ *  - creates new players with th info
+ */
+
+/**
  * The UI for home screen, player setup etc.
  */
 
