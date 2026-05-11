@@ -66,11 +66,9 @@ public class UIClueGame
         
         JButton nextBtn = new JButton("Choose Characters →");
         nextBtn.addActionListener(e -> {
-          theContainer.add(chooseCharacters(this.numPlayers), NUM_PLAYERS);;
-          });
-        nextBtn.addActionListener(e -> theCardLayout.show(theContainer, CHOOSE_PLAYERS));
-        nextBtn.addActionListener(e -> {
           this.numPlayers = Integer.parseInt((String)players.getSelectedItem());
+          theContainer.add(chooseCharacters(this.numPlayers), CHOOSE_PLAYERS);
+          theCardLayout.show(theContainer, CHOOSE_PLAYERS);
           });
         GridBagConstraints gbc = new GridBagConstraints();
 
