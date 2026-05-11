@@ -4,13 +4,20 @@ public class GameManager {
     private ArrayList<Player> players;
     private CardDeck cardDeck;
     private int currentPlayerIndex;
+    private int steps;
+    private Board board;
 
     public GameManager(ArrayList<Player> players) {
         this.players = players;
         cardDeck = new CardDeck();
         this.currentPlayerIndex = 0;
-
+        board = new Board();
         cardDeck.dealCards(players);
+
+        players.get(0).setPosition(2, 0);
+        players.get(1).setPosition(2, 1);
+        players.get(2).setPosition(2, 2);
+        players.get(3).setPosition(2, 3);
     }
 
     public Player getCurrentTurn() {
@@ -53,7 +60,10 @@ public class GameManager {
     }
 
     public String makeSuggestion(Card suspectGuess, Card weaponGuess) {
-        String room = players.get(currentPlayerIndex).getCurrentRoom();
+        String room = board.getRoom(players.get(currentPlayerIndex));
+        if (room.equals("Walkway") || room.equals("Doorway") || room.equals(null)) {
+            return "Not in room. Suggestion cannot be made.";
+        }
         Card roomCard = new Card("room", room);
         String result = "\nSuspect suggestion: " + suspectGuess.getName() + "\nWeapon suggestion: " + weaponGuess.getName() + "\nRoom suggestion: " + room;
 
@@ -86,19 +96,46 @@ public class GameManager {
         return roll;
     }
 
-    public void movePlayer(int steps) {
+    // public void movePlayer(int steps) {
+    //     Player player = getCurrentTurn();
+    //     player.setPosition(player.getPosition() + steps);
+    // }
+
+    public void setPlayerPos(int r, int c) {
         Player player = getCurrentTurn();
-        player.setPosition(player.getPosition() + steps);
+        board.setPlayer(player, r, c);
     }
 
     public void takeTurn() {
         Player current = getCurrentTurn();
         System.out.println("\nPlayer " + (currentPlayerIndex + 1) + " (" + current.getCharacterName() + ")'s turn:");
-        int steps = rollDice();
-        movePlayer(steps);
-        //current.setRoom();
-        System.out.println("Moved to position " + current.getPosition());
-        System.out.println("\nPlayer " + (currentPlayerIndex + 1) + " is in the " + players.get(currentPlayerIndex).getCurrentRoom());
+        steps = rollDice();
+
+        // temp movement test
+        board.setPlayer(current, current.getCol() + 1, current.getRow());
+        // movePlayer(steps);
+        // current.setRoom();
+    }
+
+    public void playerMoves() {
+        Player current = getCurrentTurn();
+        System.out.println("\nPlayer " + (currentPlayerIndex + 1) + "'s turn");
+        
+        // TEMP TEST POSITION
+        current.setPosition(2, 2);
+
+        // TEMP TEST ROLL
+        int roll = 3;
+
+        System.out.println("Current Position: (" +current.getRow() + ", " + current.getCol() + ")");
+
+        ArrayList<Tile> moves = board.getValidMoves(current, roll);
+
+        System.out.println("\nValid Moves:");
+        
+        for (Tile tile : moves) {
+            System.out.println("(" + tile.getX() + ", " + tile.getY() + ")");
+        }
     }
 
 }
