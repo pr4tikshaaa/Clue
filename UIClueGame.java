@@ -17,8 +17,9 @@ public class UIClueGame
     private static final String HOME_NAME = "Home";
     private static final String NUM_PLAYERS = "Num of players";
     private static final String CHOOSE_PLAYERS = "Player Setup";
-    //private static final String MAINBOARD_NAME = "Main Baoard";
-    private String numPlayers;
+    private ArrayList<JComboBox<String>> playerDropdowns = new ArrayList<>();
+    private final String[] suspects = {"Col. Mustard", "Miss Scarlet", "Prof. Plum", "Mr. Green", "Mrs. Peacock", "Mrs. White"};
+    private int numPlayers;
     private JLabel numPlayersLabel;
     private JFrame myFrame;
     private JPanel theContainer; //to hold the different pages
@@ -34,7 +35,6 @@ public class UIClueGame
         theContainer = new JPanel(theCardLayout);
         theContainer.add(homeScreen(), HOME_NAME);
         theContainer.add(playerSetupScreen(), NUM_PLAYERS);
-        theContainer.add(chooseCharacters(), CHOOSE_PLAYERS);
 
         myFrame.add(theContainer);
         myFrame.setVisible(true);
@@ -65,10 +65,12 @@ public class UIClueGame
         JComboBox<String> players = new JComboBox<>(numPlayers);
         
         JButton nextBtn = new JButton("Choose Characters →");
+        nextBtn.addActionListener(e -> {
+          theContainer.add(chooseCharacters(this.numPlayers), NUM_PLAYERS);;
+          });
         nextBtn.addActionListener(e -> theCardLayout.show(theContainer, CHOOSE_PLAYERS));
         nextBtn.addActionListener(e -> {
-          this.numPlayers = (String)players.getSelectedItem();
-          numPlayersLabel.setText(this.numPlayers); //for debuging
+          this.numPlayers = Integer.parseInt((String)players.getSelectedItem());
           });
         GridBagConstraints gbc = new GridBagConstraints();
 
@@ -82,13 +84,11 @@ public class UIClueGame
 
         return playerPanel;
        }
-     private JPanel chooseCharacters()
+     private JPanel chooseCharacters(int totalPlayers)
      {
-          JPanel charactersPanel = new JPanel(new GridBagLayout());
-          numPlayersLabel = new JLabel (numPlayers); //to store total number of players
+        JPanel choosingCharacters = new JPanel(new GridBagLayout());
+        return choosingCharacters;
 
-          charactersPanel.add(numPlayersLabel);
-          return charactersPanel;
      }
 
    public static void main (String[] args)
