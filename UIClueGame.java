@@ -1,12 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+//import java.awt.event.*;
 import java.util.*;
 
-/**
- * TODO: choosing characters
- *  - creates new players with th info
- */
 
 /**
  * The UI for home screen, player setup etc.
@@ -17,10 +13,11 @@ public class UIClueGame
     private static final String HOME_NAME = "Home";
     private static final String NUM_PLAYERS = "Num of players";
     private static final String CHOOSE_PLAYERS = "Player Setup";
+    private static final String THE_BOARD = "Board";
     private ArrayList<Player> players = new ArrayList<>();
     private final String[] suspects = {"Col. Mustard", "Miss Scarlet", "Prof. Plum", "Mr. Green", "Mrs. Peacock", "Mrs. White"};
     private int numPlayers;
-    private JLabel numPlayersLabel;
+    //private JLabel numPlayersLabel;
     private JFrame myFrame;
     private JPanel theContainer; //to hold the different pages
     private CardLayout theCardLayout;
@@ -107,8 +104,60 @@ public class UIClueGame
           choosingCharacters.add(theRow, gbc);
           //System.out.println("Player " + players.get(temp-1).getPlayerName() + " is playing: " + players.get(temp-1).getCharacterName());
         }
+        /**
+         * TODO: fix the button
+         * TODO: add a method to check if character choices are valid
+         */
+        gbc.gridy++;
+        JButton nextBtn = new JButton("Start the game →");
+        choosingCharacters.add(nextBtn, gbc);
+        JLabel error = new JLabel("Choose different characters!");
+        error.setVisible(false);
+        gbc.gridy++;
+        choosingCharacters.add(error, gbc);
+
+        nextBtn.addActionListener(e -> {
+          if (checkCharacters(players) == true)
+          {
+            error.setVisible(false);
+            for (Player p : players) {
+                System.out.println("Player " + p.getPlayerName() + " is playing: " + p.getCharacterName());
+            }
+            theContainer.add(boardScreen(), THE_BOARD);
+            theCardLayout.show(theContainer, THE_BOARD);
+          }
+          else
+          {
+            error.setVisible(true);
+          }
+            
+        });
+      
         return choosingCharacters;
 
+     }
+     /**
+      * TODO: Finish this method!
+      * 
+      */
+     private JPanel boardScreen()
+     {
+        JPanel theBoard = new JPanel(new GridBagLayout());
+        return theBoard;
+     }
+
+     private boolean checkCharacters(ArrayList<Player> players)
+     {
+        ArrayList<Player> fake = new ArrayList<Player>();
+        for (Player p : players)
+        {
+            if (!fake.contains(p))
+            {
+                fake.add(p);
+            }
+            else return false;
+        }
+        return true;
      }
 
    public static void main (String[] args)
