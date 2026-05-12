@@ -27,6 +27,10 @@ public class Player {
     public String getCharacterName() {
         return characterName;
     }
+    public void setCharacterName(String newString)
+    {
+        characterName = newString;
+    }
 
     public ArrayList<Card> getHand() {
         return hand;

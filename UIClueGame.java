@@ -17,7 +17,7 @@ public class UIClueGame
     private static final String HOME_NAME = "Home";
     private static final String NUM_PLAYERS = "Num of players";
     private static final String CHOOSE_PLAYERS = "Player Setup";
-    private ArrayList<JComboBox<String>> playerDropdowns = new ArrayList<>();
+    private ArrayList<Player> players = new ArrayList<>();
     private final String[] suspects = {"Col. Mustard", "Miss Scarlet", "Prof. Plum", "Mr. Green", "Mrs. Peacock", "Mrs. White"};
     private int numPlayers;
     private JLabel numPlayersLabel;
@@ -85,6 +85,28 @@ public class UIClueGame
      private JPanel chooseCharacters(int totalPlayers)
      {
         JPanel choosingCharacters = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        for (int i = 1; i <= totalPlayers; i++)
+        {
+          int temp = i;
+          gbc.gridy = temp;
+          gbc.gridx = 0;
+          players.add(new Player("Player " + temp, " "));
+          //System.out.println(players.get(i-1).getPlayerName());// testing
+
+          JPanel theRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
+          JLabel thePlayer = new JLabel(players.get(temp-1).getPlayerName());
+          JComboBox<String> theSuspects = new JComboBox<>(suspects);
+          theSuspects.setSelectedItem(players.get(temp-1).getCharacterName());
+          theSuspects.addActionListener(e -> {
+            players.get(temp-1).setCharacterName((String)theSuspects.getSelectedItem());
+          });
+
+          theRow.add(thePlayer);
+          theRow.add(theSuspects);
+          choosingCharacters.add(theRow, gbc);
+          //System.out.println("Player " + players.get(temp-1).getPlayerName() + " is playing: " + players.get(temp-1).getCharacterName());
+        }
         return choosingCharacters;
 
      }
