@@ -34,6 +34,24 @@ public class Board {
         for (int r = 0; r < board.length; r++) {
             for (int c = 0; c < board[0].length; c++) {
                 if ((r >= 0 && r < 4) && (c >= 0 && c < 7)) {
+                    board[r][c] = new Tile(r, c, "Room", study);
+                } else if ((r >= 16 && r < 24) && (c >= 8 && c < 16)) {
+                    board[r][c] = new Tile(r, c, "Room", ballroom);
+                } else if ((r >= 0 && r < 7) && (c >= 9 && c < 15)) {
+                    board[r][c] = new Tile(r, c, "Room", hall);
+                } else if ((r >= 0 && r < 6) && (c >= 17 && c < 24)) {
+                    board[r][c] = new Tile(r, c, "Room", lounge);
+                } else if ((r >= 6 && r < 11) && (c >= 0 && c < 7)) {
+                    board[r][c] = new Tile(r, c, "Room", library);
+                } else if ((r >= 12 && r < 16) && (c >= 0 && c < 6)) {
+                    board[r][c] = new Tile(r, c, "Room", billiardRoom);
+                } else if ((r >= 18 && r < 24) && (c >= 0 && c < 6)) {
+                    board[r][c] = new Tile(r, c, "Room", conservatory);
+                } else if ((r >= 8 && r < 14) && (c >= 9 && c < 14)) {
+                    board[r][c] = new Tile(r, c, "Room", cellar);
+                } else if ((r >= 9 && r < 15) && (c >= 16&& c < 24)) {
+                    board[r][c] = new Tile(r, c, "Room", diningRoom);
+                } else if ((r >= 17 && r < 24) && (c >= 18 && c < 24)) {
                     board[r][c] = new Tile(r, c, "Room", kitchen);
                 } else {
                     board[r][c] = new Tile(r, c, "Walkway", null);
@@ -41,7 +59,23 @@ public class Board {
             }
         }
 
-        board[4][6] = new Tile(0, 2, "Doorway", kitchen);
+        board[4][6] = new Tile(4,6, "Doorway", kitchen);
+        board[18][7] = new Tile(18, 7, "Doorway", ballroom);
+        board[15][9] = new Tile(15, 9, "Doorway", ballroom);
+        board[15][14] = new Tile(15, 14, "Doorway", ballroom);
+        board[18][16] = new Tile(18, 26, "Doorway", ballroom);
+        board[18][5] = new Tile(18, 5, "Doorway", conservatory);
+        board[14][6] = new Tile(14, 6, "Doorway", billiardRoom);
+        board[11][1] = new Tile(11, 1, "Doorway", billiardRoom);
+        board[11][3] = new Tile(11, 3, "Doorway", library);
+        board[8][7] = new Tile(8, 7, "Doorway", library);
+        board[4][8] = new Tile(4, 8, "Doorway", hall);
+        board[7][11] = new Tile(7,11, "Doorway", hall);
+        board[7][12] = new Tile(7, 12, "Doorway", hall);
+        board[6][17] = new Tile(7, 12, "Doorway", lounge);
+        board[8][17] = new Tile(7, 12, "Doorway", diningRoom);
+        board[12][15] = new Tile(7, 12, "Doorway", diningRoom);
+        board[16][19] = new Tile(7, 12, "Doorway", kitchen);
         kitchen.addDoor(board[4][6]);
     }
 

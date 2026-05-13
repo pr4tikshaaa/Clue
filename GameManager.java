@@ -123,7 +123,7 @@ public class GameManager {
         System.out.println("\nPlayer " + (currentPlayerIndex + 1) + "'s turn");
         
         // TEMP TEST POSITION
-        current.setPosition(2, 2);
+        current.setPosition(23, 7);
 
         // TEMP TEST ROLL
         int roll = 3;
