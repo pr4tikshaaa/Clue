@@ -4,26 +4,28 @@ public class Board {
     private Tile[][] board;
     private ArrayList<Location> validMoves;
     private Room kitchen;
-    // private Room ballroom;
-    // private Room Conservatory;
-    // private Room Study;
-    // private Room Hall;
-    // private Room BilliardRoom;
-    // private Room DiningRoom;
-    // private Room Lounge;
-    // private Room Library;
+    private Room ballroom;
+    private Room conservatory;
+    private Room study;
+    private Room hall;
+    private Room billiardRoom;
+    private Room diningRoom;
+    private Room lounge;
+    private Room library;
+    private Room cellar;
 
     public Board() {
-        board = new Tile[3][5];
+        board = new Tile[24][24];
         kitchen = new Room("Kitchen");
-        // ballroom = new Room("Ballroom");
-        // conservatory = new Room("Conservatory");
-        // study = new Room("Study");
-        // hall = new Room("Hall");
-        // billiardRoom = new Room("BilliardRoom");
-        // diningRoom = new Room("DiningRoom");
-        // kounge = new Room("Lounge");
-        // library = new Room("Library");
+        ballroom = new Room("Ballroom");
+        conservatory = new Room("Conservatory");
+        study = new Room("Study");
+        hall = new Room("Hall");
+        billiardRoom = new Room("BilliardRoom");
+        diningRoom = new Room("DiningRoom");
+        lounge = new Room("Lounge");
+        library = new Room("Library");
+        cellar = new Room("Cellar");
         initializeBoard();
     }
 
@@ -31,18 +33,16 @@ public class Board {
     public void initializeBoard() {
         for (int r = 0; r < board.length; r++) {
             for (int c = 0; c < board[0].length; c++) {
-                if ((r == 0 || r == 1) && (c == 0 || c == 1)) {
-                    board[r][c] = new Tile(r, c, "Room", null);
-                } else if ((r == 0 || r == 1) && (c == 3 || c == 4)) {
-                    board[r][c] = new Tile(r, c, "Room", null);
+                if ((r >= 0 && r < 4) && (c >= 0 && c < 7)) {
+                    board[r][c] = new Tile(r, c, "Room", kitchen);
                 } else {
                     board[r][c] = new Tile(r, c, "Walkway", null);
                 }
             }
         }
 
-        board[0][2] = new Tile(0, 2, "Doorway", kitchen);
-        kitchen.addDoor(board[0][2]);
+        board[4][6] = new Tile(0, 2, "Doorway", kitchen);
+        kitchen.addDoor(board[4][6]);
     }
 
     public void printBoard() {
