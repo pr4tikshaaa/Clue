@@ -2,30 +2,47 @@ import java.util.ArrayList;
 
 public class Board {
     private Tile[][] board;
-    private ArrayList<Tile> validMoves;
+    private ArrayList<Location> validMoves;
+    private Room kitchen;
+    // private Room ballroom;
+    // private Room Conservatory;
+    // private Room Study;
+    // private Room Hall;
+    // private Room BilliardRoom;
+    // private Room DiningRoom;
+    // private Room Lounge;
+    // private Room Library;
 
     public Board() {
         board = new Tile[3][5];
+        kitchen = new Room("Kitchen");
+        // ballroom = new Room("Ballroom");
+        // conservatory = new Room("Conservatory");
+        // study = new Room("Study");
+        // hall = new Room("Hall");
+        // billiardRoom = new Room("BilliardRoom");
+        // diningRoom = new Room("DiningRoom");
+        // kounge = new Room("Lounge");
+        // library = new Room("Library");
         initializeBoard();
     }
+
 
     public void initializeBoard() {
         for (int r = 0; r < board.length; r++) {
             for (int c = 0; c < board[0].length; c++) {
                 if ((r == 0 || r == 1) && (c == 0 || c == 1)) {
-                    board[r][c] = new Tile(r, c, "Room", "Kitchen");
-                    board[r][c].setRoomName("Kitchen");
+                    board[r][c] = new Tile(r, c, "Room", null);
                 } else if ((r == 0 || r == 1) && (c == 3 || c == 4)) {
-                    board[r][c] = new Tile(r, c, "Room", "Ballroom");
-                    board[r][c].setRoomName("Ballroom");
+                    board[r][c] = new Tile(r, c, "Room", null);
                 } else {
                     board[r][c] = new Tile(r, c, "Walkway", null);
-                    board[r][c].setRoomName("Walkway");
                 }
             }
         }
 
-        board[0][2] = new Tile(0, 2, "Doorway", "Kitchen");
+        board[0][2] = new Tile(0, 2, "Doorway", kitchen);
+        kitchen.addDoor(board[0][2]);
     }
 
     public void printBoard() {
@@ -37,8 +54,8 @@ public class Board {
         }
     }
 
-    public ArrayList<Tile> getValidMoves(Player player, int roll) {
-        validMoves = new ArrayList<>();
+    public ArrayList<Location> getValidMoves(Player player, int roll) {
+        validMoves = new ArrayList<Location>();
 
         boolean visited[][] = new boolean[board.length][board[0].length];
 
@@ -62,17 +79,18 @@ public class Board {
         }
 
         if (current.isDoorway()) {
-            if (stepsLeft >= 1) {
-                if (!validMoves.contains(current))
-                validMoves.add(current);
-            }
+            if (!validMoves.contains(current.getConnectedRoom()))
+                validMoves.add(current.getConnectedRoom());
             return;
         }
 
+        //if (current.isop)
+
         if (stepsLeft == 0) {
-            if (!validMoves.contains(current))
-            validMoves.add(current)
-;            return;
+            if (!validMoves.contains(current)) {
+                validMoves.add(current);
+            }
+;           return;
         }
 
         visited[row][col] = true;
@@ -86,7 +104,7 @@ public class Board {
     }
 
     public String getRoom(Player player) {
-        return board[player.getRow()][player.getCol()].getRoomName();
+        return board[player.getRow()][player.getCol()].getName();
     }
 
     public void setPlayer(Player player, int r, int c) {
@@ -104,4 +122,5 @@ public class Board {
             return false;
         }
     }
+
 }

@@ -6,6 +6,7 @@ public class GameManager {
     private int currentPlayerIndex;
     private int steps;
     private Board board;
+    private ArrayList<Location> moves;
 
     public GameManager(ArrayList<Player> players) {
         this.players = players;
@@ -128,13 +129,21 @@ public class GameManager {
         int roll = 3;
 
         System.out.println("Current Position: (" +current.getRow() + ", " + current.getCol() + ")");
-
-        ArrayList<Tile> moves = board.getValidMoves(current, roll);
-
+        
+        moves = new ArrayList<>();
+        moves = board.getValidMoves(current, roll);
         System.out.println("\nValid Moves:");
         
-        for (Tile tile : moves) {
-            System.out.println("(" + tile.getX() + ", " + tile.getY() + ")");
+        for (Location move : moves) {
+            if (move instanceof Tile) {
+                Tile tile = (Tile) move;
+                
+                System.out.println("Hallway: (" + tile.getRow() + ", " + tile.getCol() + ")");
+            } 
+            else if (move instanceof Room) {
+                Room room = (Room) move;
+                System.out.println("Room: " + room.getName());
+            }
         }
     }
 

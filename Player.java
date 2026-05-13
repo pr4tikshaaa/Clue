@@ -8,6 +8,8 @@ public class Player {
     // private String currentRoom;
     private int row;
     private int col;
+    private Location location;
+    private Room currentRoom;
     // private int roomCount;
     // private GameManager game;
     
@@ -26,10 +28,6 @@ public class Player {
 
     public String getCharacterName() {
         return characterName;
-    }
-    public void setCharacterName(String newString)
-    {
-        characterName = newString;
     }
 
     public ArrayList<Card> getHand() {
@@ -62,9 +60,17 @@ public class Player {
         this.col = c;
     }
 
-    // public String getCurrentRoom() {
-    //     return currentRoom;
-    // }
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Location geLocation() {
+        return location;
+    }
+
+    public Room getCurrentRoom() {
+        return currentRoom;
+    }
 
     public int getRow() {
         return row;
@@ -72,6 +78,14 @@ public class Player {
 
     public int getCol() {
         return col;
+    }
+
+    public boolean isInRoom() {
+        if (currentRoom != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 

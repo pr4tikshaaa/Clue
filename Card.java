@@ -1,10 +1,12 @@
 public class Card {
-    private String type;
+    // private String type;
     private String name;
+    private String type;
 
     public Card(String type, String name) {
-        this.type = type;
+        // this.type = type;
         this.name = name;
+        this.type = type;
     }
 
     public String getName() {
@@ -13,6 +15,14 @@ public class Card {
 
     public String getType() {
         return type;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    } 
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override
