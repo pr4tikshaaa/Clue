@@ -59,7 +59,7 @@ public class Board {
             }
         }
 
-        board[4][6] = new Tile(4,6, "Doorway", kitchen);
+        board[4][6] = new Tile(4,6, "Doorway", study);
         board[18][7] = new Tile(18, 7, "Doorway", ballroom);
         board[15][9] = new Tile(15, 9, "Doorway", ballroom);
         board[15][14] = new Tile(15, 14, "Doorway", ballroom);
@@ -72,11 +72,29 @@ public class Board {
         board[4][8] = new Tile(4, 8, "Doorway", hall);
         board[7][11] = new Tile(7,11, "Doorway", hall);
         board[7][12] = new Tile(7, 12, "Doorway", hall);
-        board[6][17] = new Tile(7, 12, "Doorway", lounge);
-        board[8][17] = new Tile(7, 12, "Doorway", diningRoom);
-        board[12][15] = new Tile(7, 12, "Doorway", diningRoom);
-        board[16][19] = new Tile(7, 12, "Doorway", kitchen);
-        kitchen.addDoor(board[4][6]);
+        board[6][17] = new Tile(6, 17, "Doorway", lounge);
+        board[8][17] = new Tile(8, 17, "Doorway", diningRoom);
+        board[12][15] = new Tile(12, 15, "Doorway", diningRoom);
+        board[16][19] = new Tile(16, 19, "Doorway", kitchen);
+        
+        board[6][6] = new Tile(16, 19, "Walkway", null);
+        board[10][6] = new Tile(16, 19, "Walkway", null);
+        board[23][9] = new Tile(16, 19, "Walkway", null);
+        board[23][8] = new Tile(16, 19, "Walkway", null);
+        board[22][9] = new Tile(16, 19, "Walkway", null);
+        board[22][8] = new Tile(16, 19, "Walkway", null);
+        board[22][14] = new Tile(16, 19, "Walkway", null);
+        board[22][15] = new Tile(16, 19, "Walkway", null);
+        board[23][14] = new Tile(16, 19, "Walkway", null);
+        board[23][15] = new Tile(16, 19, "Walkway", null);
+        board[14][16] = new Tile(16, 19, "Walkway", null);
+        board[14][17] = new Tile(16, 19, "Walkway", null);
+        board[14][18] = new Tile(16, 19, "Walkway", null);
+
+        kitchen.setSecretPassage(study);
+        study.setSecretPassage(kitchen);
+        lounge.setSecretPassage(conservatory);
+        conservatory.setSecretPassage(lounge);
     }
 
     public void printBoard() {
@@ -107,6 +125,10 @@ public class Board {
         }
 
         Tile current = board[row][col];
+
+        if (current.isOccupied() && stepsLeft != 0) {
+            return;
+        }
 
         if (current.isRoom()) {
             return;
@@ -142,11 +164,13 @@ public class Board {
     }
 
     public void setPlayer(Player player, int r, int c) {
-        if (isValidLocation(r, c)) {
-            player.setPosition(r, c);
-        } else {
-            player.setPosition(player.getRow(), player.getCol());
+        if (!isValidLocation(r, c)) {
+            return;
         }
+
+        board[player.getRow()][player.getCol()].setOccupied(false);
+        player.setPosition(r, c);
+        board[r][c].setOccupied(true);
     }
 
     public boolean isValidLocation(int r, int c) {

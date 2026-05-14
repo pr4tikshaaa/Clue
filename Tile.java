@@ -5,13 +5,14 @@ public class Tile implements Location {
     private String tileType;
     private Room connectedRoom;
     //private Room secretPassage;
-    //private boolean occupied;
+    private boolean occupied;
 
     public Tile(int r, int c, String tileType, Room connectedRoom) {
         row = r;
         col = c;
         this.tileType = tileType;
         this.connectedRoom = connectedRoom;
+        occupied = false;
     }
 
     public String getTileType() {
@@ -77,8 +78,10 @@ public class Tile implements Location {
             return "X".substring(0, 1);
         } else if (isDoorway()) {
             return "D".substring(0, 1);
+        } else if (occupied) {
+            return "P";
         } else {
-            return "W".substring(0, 1);
+            return "-".substring(0, 1);
         }
     }
 
@@ -106,4 +109,12 @@ public class Tile implements Location {
     // private Room getSecretPassage() {
     //     return secretPassage;
     // }
+
+    public boolean isOccupied() {
+        return occupied;
+    }
+
+    public void setOccupied(boolean occupied) {
+        this.occupied = occupied;
+    }
 }
