@@ -29,6 +29,13 @@ public class Player {
     public String getCharacterName() {
         return characterName;
     }
+    /**
+     * needed for UIClueGame to update what character they are
+     */
+    public void setCharacterName(String charName)
+    {
+        characterName = charName;
+    }
 
     public ArrayList<Card> getHand() {
         return hand;

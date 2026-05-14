@@ -15,7 +15,7 @@ public class UIClueGame
     private static final String CHOOSE_PLAYERS = "Player Setup";
     private static final String THE_BOARD = "Board";
     private ArrayList<Player> players = new ArrayList<>();
-    private final String[] suspects = {"Col. Mustard", "Miss Scarlet", "Prof. Plum", "Mr. Green", "Mrs. Peacock", "Mrs. White"};
+    private final String[] suspects = {" ", "Col. Mustard", "Miss Scarlet", "Prof. Plum", "Mr. Green", "Mrs. Peacock", "Mrs. White"};
     private int numPlayers;
     //private JLabel numPlayersLabel;
     private JFrame myFrame;
@@ -81,6 +81,7 @@ public class UIClueGame
        }
      private JPanel chooseCharacters(int totalPlayers)
      {
+        players.clear();
         JPanel choosingCharacters = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         for (int i = 1; i <= totalPlayers; i++)
@@ -104,10 +105,6 @@ public class UIClueGame
           choosingCharacters.add(theRow, gbc);
           //System.out.println("Player " + players.get(temp-1).getPlayerName() + " is playing: " + players.get(temp-1).getCharacterName());
         }
-        /**
-         * TODO: fix the button
-         * TODO: add a method to check if character choices are valid
-         */
         gbc.gridy++;
         JButton nextBtn = new JButton("Start the game →");
         choosingCharacters.add(nextBtn, gbc);
@@ -148,14 +145,16 @@ public class UIClueGame
 
      private boolean checkCharacters(ArrayList<Player> players)
      {
-        ArrayList<Player> fake = new ArrayList<Player>();
-        for (Player p : players)
+        ArrayList<String> names = new ArrayList<String>();
+        String character = "";
+        for (int i = 0; i < players.size(); i++)
         {
-            if (!fake.contains(p))
+            character = players.get(i).getCharacterName();
+            if (names.contains(character) || character.equals(" "))
             {
-                fake.add(p);
+              return false;
             }
-            else return false;
+            names.add(character);
         }
         return true;
      }
