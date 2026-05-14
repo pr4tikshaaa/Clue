@@ -14,12 +14,14 @@ public class UIClueGame
     private static final String NUM_PLAYERS = "Num of players";
     private static final String CHOOSE_PLAYERS = "Player Setup";
     private static final String THE_BOARD = "Board";
-    private ArrayList<Player> players = new ArrayList<>();
     private final String[] suspects = {" ", "Col. Mustard", "Miss Scarlet", "Prof. Plum", "Mr. Green", "Mrs. Peacock", "Mrs. White"};
+    
+    private ArrayList<Player> players = new ArrayList<>();
     private int numPlayers;
-    //private JLabel numPlayersLabel;
     private JFrame myFrame;
+    private JMenuBar menuBar;
     private JPanel theContainer; //to hold the different pages
+    private JPanel[][] tileGrid;
     private CardLayout theCardLayout;
 
      public UIClueGame()
@@ -27,6 +29,9 @@ public class UIClueGame
         myFrame = new JFrame("Clue");
         myFrame.setSize(800, 600);
         myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        menuBar = new JMenuBar();
+        myFrame.setJMenuBar(menuBar);
+        menuBar.setVisible(false);
 
         theCardLayout = new CardLayout();
         theContainer = new JPanel(theCardLayout);
@@ -134,15 +139,32 @@ public class UIClueGame
 
      }
      /**
-      * TODO: Finish this method!
-      * 
+      * TODO: Fiix this method!
+      * dummy board (foro now)
       */
      private JPanel boardScreen()
      {
-        JPanel theBoard = new JPanel(new GridBagLayout());
-        return theBoard;
-     }
+        int row = 24; 
+        int col = 24;
+        JPanel board = new JPanel(new GridLayout(row, col));
+        tileGrid = new JPanel[row][col];
+        menuBar.add(new JButton("Start turn"));
+        menuBar.add(new JButton("Roll dice"));
+        menuBar.setVisible(true);
+        for (int r = 0; r < row; r++) 
+        {
+          for (int c = 0; c < col; c++) 
+          {
+              JPanel tile = new JPanel();
+              tile.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+              tileGrid[r][c] = tile;
+              board.add(tile);
+          }
+        }
+          return board;
+      }
 
+      // Helper methods
      private boolean checkCharacters(ArrayList<Player> players)
      {
         ArrayList<String> names = new ArrayList<String>();
@@ -168,3 +190,30 @@ public class UIClueGame
  
    }
 }
+
+/* board layout? to fill in the rooms with different colors
+X X X X X X X - - X X X X X X - - X X X X X X X 
+X X X X X X X - - X X X X X X - - X X X X X X X 
+X X X X X X X - - X X X X X X - - X X X X X X X 
+X X X X X X X - - X X X X X X - - X X X X X X X 
+- - - - - - D - D X X X X X X - - X X X X X X X 
+- - - - - - - - - X X X X X X - - X X X X X X X 
+X X X X X X - - - X X X X X X - - D - - - - - - 
+X X X X X X X - - - - D D - - - - - - - - - - - 
+X X X X X X X D - X X X X X - - - D - - - - - - 
+X X X X X X X - - X X X X X - - X X X X X X X X 
+X X X X X X - - - X X X X X - - X X X X X X X X 
+- D - D - - - - - X X X X X - - X X X X X X X X 
+X X X X X X - - - X X X X X - D X X X X X X X X 
+X X X X X X - - - X X X X X - - X X X X X X X X 
+X X X X X X D - - - - - - - - - - - - X X X X X 
+X X X X X X - - - D - - - - D - - - - - - - - - 
+- - - - - - - - X X X X X X X X - - - D - - - - 
+- - - - - - - - X X X X X X X X - - X X X X X X 
+X X X X X D - D X X X X X X X X D - X X X X X X 
+X X X X X X - - X X X X X X X X - - X X X X X X 
+X X X X X X - - X X X X X X X X - - X X X X X X 
+X X X X X X - - X X X X X X X X - - X X X X X X 
+X X X X X X - - - - X X X X - - - - X X X X X X 
+X X X X X X - - - - X X X X - - - - X X X X X X 
+*/
