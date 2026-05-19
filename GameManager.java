@@ -15,10 +15,10 @@ public class GameManager {
         board = new Board();
         cardDeck.dealCards(players);
 
-        players.get(0).setPosition(2, 0);
-        players.get(1).setPosition(2, 1);
-        players.get(2).setPosition(2, 2);
-        players.get(3).setPosition(2, 3);
+        // players.get(0).setPosition(2, 0);
+        // players.get(1).setPosition(2, 1);
+        // players.get(2).setPosition(2, 2);
+        // players.get(3).setPosition(2, 3);
     }
 
     public Player getCurrentTurn() {

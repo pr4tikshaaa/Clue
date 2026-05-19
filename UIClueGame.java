@@ -14,7 +14,7 @@ public class UIClueGame
     private static final String NUM_PLAYERS = "Num of players";
     private static final String CHOOSE_PLAYERS = "Player Setup";
     private static final String THE_BOARD = "Board";
-    private final String[] suspects = {" ", "Col. Mustard", "Miss Scarlet", "Prof. Plum", "Mr. Green", "Mrs. Peacock", "Mrs. White"};
+    private final String[] suspects = {" ", "Col. Mustard", "Miss Scarlet", "Prof. Plum", "Mr. Green", "Mrs. Peacock", "Dr. Orchid"};
     
     private ArrayList<Player> players = new ArrayList<>();
     private int numPlayers;
@@ -23,6 +23,7 @@ public class UIClueGame
     private JPanel theContainer; //to hold the different pages
     private JPanel[][] tileGrid;
     private CardLayout theCardLayout;
+    private GameManager game;
 
      public UIClueGame()
      {
@@ -144,27 +145,41 @@ public class UIClueGame
       */
      private JPanel boardScreen()
      {
+        game = new GameManager(players);
         Dice dice = new Dice();
         int row = 24; 
         int col = 24;
         JPanel board = new JPanel(new GridLayout(row, col));
         tileGrid = new JPanel[row][col];
-
+//buttons & labels
         JButton startTurn = new JButton("Start turn");
         JButton roll = new JButton("Roll dice");
+        JLabel player = new JLabel("Turn: ");
+        JLabel toRoll = new JLabel("Roll: ");
+        toRoll.setVisible(false);
+        player.setVisible(false);
+        roll.setVisible(false);
+
         menuBar.add(startTurn);
         menuBar.add(roll);
-        roll.setVisible(false);
+        menuBar.add(toRoll);
+        menuBar.add(player);
+//making them do things
         startTurn.addActionListener(e -> {
+          player.setText(" Turn: " + (game.getCurrentTurn()).getPlayerName());
+          player.setVisible(true);
           roll.setVisible(true);
           ((JButton)e.getSource()).setEnabled(false);
         });
         roll.addActionListener(ee -> {
           dice.roll();
-          System.out.println(dice.getNumDots());
+          toRoll.setText("Roll: " + dice.getNumDots());
+          toRoll.setVisible(true);
+          menuBar.repaint();
+          ((JButton)ee.getSource()).setEnabled(false);
         });
         menuBar.setVisible(true);
-
+//Creating dummy board
         for (int r = 0; r < row; r++) 
         {
           for (int c = 0; c < col; c++) 
