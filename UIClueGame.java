@@ -144,13 +144,27 @@ public class UIClueGame
       */
      private JPanel boardScreen()
      {
+        Dice dice = new Dice();
         int row = 24; 
         int col = 24;
         JPanel board = new JPanel(new GridLayout(row, col));
         tileGrid = new JPanel[row][col];
-        menuBar.add(new JButton("Start turn"));
-        menuBar.add(new JButton("Roll dice"));
+
+        JButton startTurn = new JButton("Start turn");
+        JButton roll = new JButton("Roll dice");
+        menuBar.add(startTurn);
+        menuBar.add(roll);
+        roll.setVisible(false);
+        startTurn.addActionListener(e -> {
+          roll.setVisible(true);
+          ((JButton)e.getSource()).setEnabled(false);
+        });
+        roll.addActionListener(ee -> {
+          dice.roll();
+          System.out.println(dice.getNumDots());
+        });
         menuBar.setVisible(true);
+
         for (int r = 0; r < row; r++) 
         {
           for (int c = 0; c < col; c++) 
