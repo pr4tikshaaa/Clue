@@ -1,248 +1,350 @@
-import javax.swing.*;
-import java.awt.*;
-//import java.awt.event.*;
-import java.util.*;
+import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.TranslateTransition;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import java.io.File;
+import java.util.ArrayList;
 
-
-/**
- * The UI for home screen, player setup etc.
- */
-
-public class UIClueGame 
-{
-    private static final String HOME_NAME = "Home";
-    private static final String NUM_PLAYERS = "Num of players";
-    private static final String CHOOSE_PLAYERS = "Player Setup";
-    private static final String THE_BOARD = "Board";
-    private final String[] suspects = {" ", "Col. Mustard", "Miss Scarlet", "Prof. Plum", "Mr. Green", "Mrs. Peacock", "Dr. Orchid"};
-    
+public class UIClueGame extends Application {
+    private StackPane rootContainer; // Swaps views inside this master container
     private ArrayList<Player> players = new ArrayList<>();
     private int numPlayers;
-    private JFrame myFrame;
-    private JMenuBar menuBar;
-    private JPanel theContainer; //to hold the different pages
-    private JPanel[][] tileGrid;
-    private CardLayout theCardLayout;
-    private GameManager game;
+    private final String[] suspectsList = {" ", "Col. Mustard", "Miss Scarlet", "Prof. Plum", "Mr. Green", "Mrs. Peacock", "Dr. Orchid"};
 
-     public UIClueGame()
-     {
-        myFrame = new JFrame("Clue");
-        myFrame.setSize(800, 600);
-        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        menuBar = new JMenuBar();
-        myFrame.setJMenuBar(menuBar);
-        menuBar.setVisible(false);
+    @Override
+    public void start(Stage primaryStage) {
+        rootContainer = new StackPane();
+        rootContainer.getStyleClass().add("root-container");
 
-        theCardLayout = new CardLayout();
-        theContainer = new JPanel(theCardLayout);
-        theContainer.add(homeScreen(), HOME_NAME);
-        theContainer.add(playerSetupScreen(), NUM_PLAYERS);
+        Scene scene = new Scene(rootContainer, 800, 740);
+        // Attaches your clean custom website-like CSS rules
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
-        myFrame.add(theContainer);
-        myFrame.setVisible(true);
-     }
+        // Initialize and show the Home Screen instantly
+        rootContainer.getChildren().add(buildHomeScreen());
 
-     private JPanel homeScreen()
-   {
-        JPanel homePanel = new JPanel(new GridBagLayout());
-        JLabel title = new JLabel("CLUE");
-        title.setFont(new Font("Serif", Font.BOLD, 70));
-        JButton startBtn = new JButton("Start Game");
-        startBtn.addActionListener(e -> theCardLayout.show(theContainer, NUM_PLAYERS));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        homePanel.add(title, gbc);
-        gbc.gridy = 1;
-        gbc.insets = new Insets(20, 0, 0, 0); // Add space between title and button
-        homePanel.add(startBtn, gbc);
-        return homePanel;
-   }
-     private JPanel playerSetupScreen()
-   {
-        JPanel playerPanel = new JPanel(new GridBagLayout());
-        JLabel title1 = new JLabel("How many players?");
+        primaryStage.setTitle("CLUE");
+        primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.show();
+    }
 
-        String[] numPlayers = { "3", "4", "5", "6"};
-        JComboBox<String> players = new JComboBox<>(numPlayers);
-        
-        JButton nextBtn = new JButton("Choose Characters →");
-        nextBtn.addActionListener(e -> {
-          this.numPlayers = Integer.parseInt((String)players.getSelectedItem());
-          theContainer.add(chooseCharacters(this.numPlayers), CHOOSE_PLAYERS);
-          theCardLayout.show(theContainer, CHOOSE_PLAYERS);
-          });
-        GridBagConstraints gbc = new GridBagConstraints();
+    private VBox buildHomeScreen() {
+    VBox homeLayout = new VBox(20); // 20px spacing between your elements
+    homeLayout.setAlignment(Pos.CENTER);
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        playerPanel.add(title1, gbc);
-        gbc.gridy = 1;
-        playerPanel.add(players, gbc);
-        gbc.gridy = 2; 
-        playerPanel.add(nextBtn, gbc);
+    // 1. BACKGROUND INITIALIZATION (Your cover art setup goes here)
 
-        return playerPanel;
-       }
-     private JPanel chooseCharacters(int totalPlayers)
-     {
-        players.clear();
-        JPanel choosingCharacters = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        for (int i = 1; i <= totalPlayers; i++)
-        {
-          int temp = i;
-          gbc.gridy = temp;
-          gbc.gridx = 0;
-          players.add(new Player("Player " + temp, " "));
-          //System.out.println(players.get(i-1).getPlayerName());// testing
+    // 2. EXTRA LARGE CUSTOM LOGO SETUP
+    StackPane logoContainer = new StackPane();
 
-          JPanel theRow = new JPanel(new FlowLayout(FlowLayout.LEFT));
-          JLabel thePlayer = new JLabel(players.get(temp-1).getPlayerName());
-          JComboBox<String> theSuspects = new JComboBox<>(suspects);
-          theSuspects.setSelectedItem(players.get(temp-1).getCharacterName());
-          theSuspects.addActionListener(e -> {
-            players.get(temp-1).setCharacterName((String)theSuspects.getSelectedItem());
-          });
-
-          theRow.add(thePlayer);
-          theRow.add(theSuspects);
-          choosingCharacters.add(theRow, gbc);
-          //System.out.println("Player " + players.get(temp-1).getPlayerName() + " is playing: " + players.get(temp-1).getCharacterName());
-        }
-        gbc.gridy++;
-        JButton nextBtn = new JButton("Start the game →");
-        choosingCharacters.add(nextBtn, gbc);
-        JLabel error = new JLabel("Choose different characters!");
-        error.setVisible(false);
-        gbc.gridy++;
-        choosingCharacters.add(error, gbc);
-
-        nextBtn.addActionListener(e -> {
-          if (checkCharacters(players) == true)
-          {
-            error.setVisible(false);
-            for (Player p : players) {
-                System.out.println("Player " + p.getPlayerName() + " is playing: " + p.getCharacterName());
-            }
-            theContainer.add(boardScreen(), THE_BOARD);
-            theCardLayout.show(theContainer, THE_BOARD);
-          }
-          else
-          {
-            error.setVisible(true);
-          }
+    try {
+        File logoFile = new File("clue_cover.jpg"); 
+        if (logoFile.exists()) {
+            Image logoImg = new Image(logoFile.toURI().toString());
+            ImageView logoView = new ImageView(logoImg);
             
-        });
-      
-        return choosingCharacters;
-
-     }
-     /**
-      * TODO: Fiix this method!
-      * dummy board (foro now)
-      */
-     private JPanel boardScreen()
-     {
-        game = new GameManager(players);
-        Dice dice = new Dice();
-        int row = 24; 
-        int col = 24;
-        JPanel board = new JPanel(new GridLayout(row, col));
-        tileGrid = new JPanel[row][col];
-//buttons & labels
-        JButton startTurn = new JButton("Start turn");
-        JButton roll = new JButton("Roll dice");
-        JLabel player = new JLabel("Turn: ");
-        JLabel toRoll = new JLabel("Roll: ");
-        toRoll.setVisible(false);
-        player.setVisible(false);
-        roll.setVisible(false);
-
-        menuBar.add(startTurn);
-        menuBar.add(roll);
-        menuBar.add(toRoll);
-        menuBar.add(player);
-//making them do things
-        startTurn.addActionListener(e -> {
-          player.setText(" Turn: " + (game.getCurrentTurn()).getPlayerName());
-          player.setVisible(true);
-          roll.setVisible(true);
-          ((JButton)e.getSource()).setEnabled(false);
-        });
-        roll.addActionListener(ee -> {
-          dice.roll();
-          toRoll.setText("Roll: " + dice.getNumDots());
-          toRoll.setVisible(true);
-          menuBar.repaint();
-          ((JButton)ee.getSource()).setEnabled(false);
-        });
-        menuBar.setVisible(true);
-//Creating dummy board
-        for (int r = 0; r < row; r++) 
-        {
-          for (int c = 0; c < col; c++) 
-          {
-              JPanel tile = new JPanel();
-              tile.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-              tileGrid[r][c] = tile;
-              board.add(tile);
-          }
+            logoView.setPreserveRatio(true);
+            logoView.setFitWidth(650);   // Keeps your logo wide and bold
+            logoView.setFitHeight(200);  // Explicitly limits image vertical canvas height
+            
+            logoContainer.getChildren().add(logoView);
+        } else {
+            Label fallbackLabel = new Label("[ LOGO PLACEHOLDER ]");
+            fallbackLabel.getStyleClass().add("title-text");
+            fallbackLabel.setStyle("-fx-font-size: 54px;");
+            logoContainer.getChildren().add(fallbackLabel);
         }
-          return board;
-      }
+    } catch (Exception e) {
+        System.out.println("Could not load custom logo graphic.");
+    }
+    
+    // --- INTRO ANIMATION TRACK ---
+    logoContainer.setOpacity(0.0);
+    logoContainer.setTranslateY(40); 
+    
+    FadeTransition fadeInLogo = new FadeTransition(Duration.millis(1200), logoContainer);
+    fadeInLogo.setFromValue(0.0); 
+    fadeInLogo.setToValue(1.0);
+    
+    TranslateTransition riseUpLogo = new TranslateTransition(Duration.millis(1200), logoContainer);
+    riseUpLogo.setFromY(40); 
+    riseUpLogo.setToY(0); 
+    
+    ParallelTransition introAnim = new ParallelTransition(fadeInLogo, riseUpLogo);
+    introAnim.setDelay(Duration.millis(300));
+    introAnim.play();
 
-      // Helper methods
-     private boolean checkCharacters(ArrayList<Player> players)
-     {
-        ArrayList<String> names = new ArrayList<String>();
-        String character = "";
-        for (int i = 0; i < players.size(); i++)
-        {
-            character = players.get(i).getCharacterName();
-            if (names.contains(character) || character.equals(" "))
-            {
-              return false;
-            }
-            names.add(character);
-        }
-        return true;
-     }
+    // 3. INTERACTIVE START BUTTON SETUP
+    Button startBtn = new Button("START");
+    startBtn.getStyleClass().add("sleek-button");
+    startBtn.setOnAction(e -> fadeToNextScreen(buildPlayerCountScreen()));
 
-   public static void main (String[] args)
-   {
-        SwingUtilities.invokeLater(() ->
-        {
-            new UIClueGame();
-        });
- 
-   }
+    // Adds a clean, universal frame padding inside the VBox window
+    homeLayout.setPadding(new Insets(20)); 
+
+    // Layers them sequentially: Logo on top, Start Button cleanly below it
+    homeLayout.getChildren().addAll(logoContainer, startBtn);
+    return homeLayout;
 }
 
-/* board layout? to fill in the rooms with different colors
-X X X X X X X - - X X X X X X - - X X X X X X X 
-X X X X X X X - - X X X X X X - - X X X X X X X 
-X X X X X X X - - X X X X X X - - X X X X X X X 
-X X X X X X X - - X X X X X X - - X X X X X X X 
-- - - - - - D - D X X X X X X - - X X X X X X X 
-- - - - - - - - - X X X X X X - - X X X X X X X 
-X X X X X X - - - X X X X X X - - D - - - - - - 
-X X X X X X X - - - - D D - - - - - - - - - - - 
-X X X X X X X D - X X X X X - - - D - - - - - - 
-X X X X X X X - - X X X X X - - X X X X X X X X 
-X X X X X X - - - X X X X X - - X X X X X X X X 
-- D - D - - - - - X X X X X - - X X X X X X X X 
-X X X X X X - - - X X X X X - D X X X X X X X X 
-X X X X X X - - - X X X X X - - X X X X X X X X 
-X X X X X X D - - - - - - - - - - - - X X X X X 
-X X X X X X - - - D - - - - D - - - - - - - - - 
-- - - - - - - - X X X X X X X X - - - D - - - - 
-- - - - - - - - X X X X X X X X - - X X X X X X 
-X X X X X D - D X X X X X X X X D - X X X X X X 
-X X X X X X - - X X X X X X X X - - X X X X X X 
-X X X X X X - - X X X X X X X X - - X X X X X X 
-X X X X X X - - X X X X X X X X - - X X X X X X 
-X X X X X X - - - - X X X X - - - - X X X X X X 
-X X X X X X - - - - X X X X - - - - X X X X X X 
-*/
+    private VBox buildPlayerCountScreen() {
+        VBox cardContainer = new VBox(25);
+        cardContainer.getStyleClass().add("setup-card");
+        cardContainer.setMaxSize(400, 300);
+        cardContainer.setAlignment(Pos.CENTER);
+
+        Label title = new Label("SELECT TOTAL SUSPECTS");
+        title.getStyleClass().add("title-text");
+        title.setStyle("-fx-font-size: 22px;");
+
+        ComboBox<String> comboPlayers = new ComboBox<>();
+        comboPlayers.getItems().addAll("3", "4", "5", "6");
+        comboPlayers.setValue("3");
+        comboPlayers.getStyleClass().add("combo-box");
+
+        Button nextBtn = new Button("CHOOSE CHARACTERS →");
+        nextBtn.getStyleClass().add("secondary-button");
+        nextBtn.setOnAction(e -> {
+            this.numPlayers = Integer.parseInt(comboPlayers.getValue());
+            fadeToNextScreen(buildCharacterAssignmentScreen(this.numPlayers));
+        });
+
+        cardContainer.getChildren().addAll(title, comboPlayers, nextBtn);
+        
+        VBox screenWrapper = new VBox(cardContainer);
+        screenWrapper.setAlignment(Pos.CENTER);
+        return screenWrapper;
+    }
+
+    private VBox buildCharacterAssignmentScreen(int totalPlayers) {
+        players.clear();
+        VBox cardContainer = new VBox(15);
+        cardContainer.getStyleClass().add("setup-card");
+        cardContainer.setMaxSize(500, 450);
+        cardContainer.setAlignment(Pos.CENTER);
+
+        Label title = new Label("ASSIGN INVESTIGATORS");
+        title.getStyleClass().add("title-text");
+        title.setStyle("-fx-font-size: 22px;");
+        cardContainer.getChildren().add(title);
+
+        ArrayList<ComboBox<String>> menuSelectors = new ArrayList<>();
+
+        for (int i = 1; i <= totalPlayers; i++) {
+            int tempIndex = i;
+            players.add(new Player("Player " + tempIndex, " "));
+
+            HBox row = new HBox(20);
+            row.setAlignment(Pos.CENTER_LEFT);
+            row.setPadding(new Insets(5, 40, 5, 40));
+
+            Label label = new Label("INVESTIGATOR " + tempIndex + ":");
+            label.getStyleClass().add("body-text");
+            label.setPrefWidth(150);
+
+            ComboBox<String> dropdown = new ComboBox<>();
+            dropdown.getItems().addAll(suspectsList);
+            dropdown.setValue(" ");
+            dropdown.getStyleClass().add("combo-box");
+            dropdown.setPrefWidth(180);
+            
+            dropdown.setOnAction(e -> players.get(tempIndex - 1).setCharacterName(dropdown.getValue()));
+            menuSelectors.add(dropdown);
+
+            row.getChildren().addAll(label, dropdown);
+            cardContainer.getChildren().add(row);
+        }
+
+        Label errorLabel = new Label("❌ Please assign unique suspect identity files.");
+        errorLabel.getStyleClass().add("body-text");
+        errorLabel.setStyle("-fx-text-fill: #ef5350; -fx-font-size: 13px;");
+        errorLabel.setVisible(false);
+
+        Button startBtn = new Button("ENTER MANSION →");
+        startBtn.getStyleClass().add("sleek-button");
+        startBtn.setOnAction(e -> {
+            if (checkCharacters(players)) {
+                errorLabel.setVisible(false);
+                fadeToNextScreen(buildBoardScreen());
+            } else {
+                errorLabel.setVisible(true);
+            }
+        });
+
+        cardContainer.getChildren().addAll(startBtn, errorLabel);
+
+        VBox screenWrapper = new VBox(cardContainer);
+        screenWrapper.setAlignment(Pos.CENTER);
+        return screenWrapper;
+    }
+
+    private boolean checkCharacters(ArrayList<Player> players) {
+    ArrayList<String> names = new ArrayList<>();
+    for (Player p : players) {
+        String character = p.getCharacterName();
+        // If they left it blank or picked a duplicate character, return false
+        if (character == null || character.equals(" ") || names.contains(character)) {
+            return false;
+        }
+        names.add(character);
+    }
+    return true;
+}
+
+    // Add these instance variables to the top of your UIClueGame class if you don't have them:
+private GameManager gameManager;
+private FXBoardPanel visualBoard;
+private Label statusLabel;
+
+private BorderPane buildBoardScreen() {
+    BorderPane boardLayout = new BorderPane();
+    
+    // CRUCIAL BUG FIX: Your GameManager constructor strictly demands EXACTLY 4 players minimum
+    // to run its token placement rules without throwing an IndexOutOfBounds Exception.
+    // If the user selected 3 players, we temporarily patch a dummy AI character to satisfy the engine.
+    if (this.players.size() < 4) {
+        // Find a character name from the list that isn't currently assigned
+        String backupCharacter = "Dr. Orchid";
+        for (String suspect : suspectsList) {
+            if (!suspect.equals(" ") && !checkCharactersContains(suspect)) {
+                backupCharacter = suspect;
+                break;
+            }
+        }
+        this.players.add(new Player("Bot Player", backupCharacter));
+    }
+    
+    // 1. Initialize our backend engine safely with 4 players loaded
+    gameManager = new GameManager(this.players);
+    
+    // 2. Instantiate your custom canvas layout using the manager's board
+    visualBoard = new FXBoardPanel(gameManager.getBoard()); 
+    boardLayout.setCenter(visualBoard);
+
+    // 3. Action bar status reporting label setup
+    statusLabel = new Label("Game Started. Click 'START TURN' to begin.");
+    statusLabel.getStyleClass().add("body-text");
+    statusLabel.setStyle("-fx-text-fill: #deb86b; -fx-padding: 0 0 0 20;");
+
+    // 4. Create your structural top bar controls
+    HBox topActionBar = new HBox(20);
+    topActionBar.setPadding(new Insets(15));
+    topActionBar.setAlignment(Pos.CENTER_LEFT);
+    topActionBar.setStyle("-fx-background-color: #0b1324;");
+
+    Button startTurnBtn = new Button("START TURN");
+    startTurnBtn.getStyleClass().add("secondary-button");
+    
+    Button rollDiceBtn = new Button("ROLL DICE 🎲");
+    rollDiceBtn.getStyleClass().add("sleek-button");
+    rollDiceBtn.setDisable(true); 
+
+    // START TURN ACTION
+    startTurnBtn.setOnAction(e -> {
+        Player current = gameManager.getCurrentTurn();
+        statusLabel.setText(current.getPlayerName() + " (" + current.getCharacterName() + ")'s Turn");
+        startTurnBtn.setDisable(true);
+        rollDiceBtn.setDisable(false);
+    });
+
+    // ROLL DICE ACTION
+    rollDiceBtn.setOnAction(e -> {
+        Player current = gameManager.getCurrentTurn();
+        gameManager.rollDice(); 
+        int steps = current.getRoll();
+        
+        statusLabel.setText(current.getCharacterName() + " rolled a " + steps + "! Click a highlighted tile to move.");
+        rollDiceBtn.setDisable(true);
+
+        // Fetch valid grid options from your pathfinding algorithm
+        ArrayList<Tile> validTiles = gameManager.getBoard().getValidMoves(current, steps);
+        
+        // Tells your FXBoardPanel canvas to highlight these legal options visually
+        visualBoard.highlightPossibleMoves(validTiles);
+
+        // Map mouse click listeners onto the highlighted visual tiles
+        visualBoard.setOnTileClickedListener(clickedTile -> {
+            if (validTiles.contains(clickedTile)) {
+                // Update underlying model array coordinates
+                gameManager.setPlayerPos(clickedTile.getRow(), clickedTile.getCol());
+                
+                // Clear active overlay frames and update canvas asset icons
+                visualBoard.clearHighlights();
+                visualBoard.refreshPlayerPositions(); 
+                
+                // Switch turn back over to next investigator row entry
+                gameManager.setNextTurn();
+                startTurnBtn.setDisable(false);
+                statusLabel.setText("Turn ended. Waiting for next player...");
+            }
+        });
+    });
+
+    topActionBar.getChildren().addAll(startTurnBtn, rollDiceBtn, statusLabel);
+    boardLayout.setTop(topActionBar);
+
+    return boardLayout;
+}
+
+// Quick helper method to find unassigned players during configuration safety patching
+private boolean checkCharactersContains(String name) {
+    for (Player p : this.players) {
+        if (p.getCharacterName() != null && p.getCharacterName().equals(name)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+    // --- SMOOTH CROSS-SCREEN TRANSITION FADING HELPER ---
+    // --- CINEMATIC MIDNIGHT CROSS-SCREEN FADE ---
+private void fadeToNextScreen(javafx.scene.Node nextScreen) {
+    // Create a solid dark mask that sits over the entire screen layout
+    Pane fadeOverlay = new Pane();
+    fadeOverlay.setStyle("-fx-background-color: #0b1324;"); // Smooth deep navy/black fade color
+    fadeOverlay.setOpacity(0.0);
+    
+    // Add it to the top layer of our screen stack
+    rootContainer.getChildren().add(fadeOverlay);
+
+    // 1. Fade the dark overlay IN to hide the current view
+    FadeTransition fadeToDark = new FadeTransition(Duration.millis(300), fadeOverlay);
+    fadeToDark.setFromValue(0.0);
+    fadeToDark.setToValue(1.0);
+
+    fadeToDark.setOnFinished(event -> {
+        // 2. Once everything is completely dark, swap out the screens underneath safely
+        rootContainer.getChildren().clear();
+        rootContainer.getChildren().add(nextScreen);
+        
+        // Re-add our cover to the top stack so we can fade it back out
+        rootContainer.getChildren().add(fadeOverlay);
+
+        // 3. Fade the dark overlay OUT to elegantly reveal your new screen
+        FadeTransition revealNewScreen = new FadeTransition(Duration.millis(300), fadeOverlay);
+        revealNewScreen.setFromValue(1.0);
+        revealNewScreen.setToValue(0.0);
+        
+        // Clean up memory by removing the overlay entirely once the transition finishes
+        revealNewScreen.setOnFinished(e -> rootContainer.getChildren().remove(fadeOverlay));
+        revealNewScreen.play();
+    });
+
+    fadeToDark.play();
+}
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
