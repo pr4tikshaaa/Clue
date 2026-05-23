@@ -9,7 +9,6 @@ public class ClueLauncher {
         players.add(new Player("Player 4", "Mr. Green"));
 
         GameManager game = new GameManager(players);
-        Board board = new Board();
 
         // NEW GAME DETAILS
         System.out.println("\n" + "Welcome to Clue!\n");
@@ -38,7 +37,8 @@ public class ClueLauncher {
         //Card roomCard = new Card("room", "Conservatory");
 
         game.takeTurn();
-        players.get(game.getCurrentPlayerIndex()).setPosition(2, 0);
+        game.playerMoves();
+        game.takeTurn();
         game.playerMoves();
         // System.out.println("\nChecking Player " + (game.getCurrentPlayerIndex() + 1) + "'s suggestion:");
         // System.out.println(game.makeSuggestion(suspectCard, weaponCard));
@@ -52,6 +52,7 @@ public class ClueLauncher {
         // System.out.println(game.makeSuggestion(new Card("suspect", "Miss Peacock"), new Card("weapon", "Revolver")));
         game.setNextTurn();
 
-        board.printBoard();
+        game.getBoard().printBoard();
+        
     }
 }

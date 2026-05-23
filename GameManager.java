@@ -6,7 +6,7 @@ public class GameManager {
     private int currentPlayerIndex;
     private int steps;
     private Board board;
-    private ArrayList<Location> moves;
+    private ArrayList<Tile> moves;
 
     public GameManager(ArrayList<Player> players) {
         this.players = players;
@@ -15,10 +15,12 @@ public class GameManager {
         board = new Board();
         cardDeck.dealCards(players);
 
-        // players.get(0).setPosition(2, 0);
-        // players.get(1).setPosition(2, 1);
-        // players.get(2).setPosition(2, 2);
-        // players.get(3).setPosition(2, 3);
+        board.setPlayer(players.get(0), 23, 9);
+        board.setPlayer(players.get(1), 23, 14);
+        board.setPlayer(players.get(2), 17, 0);
+        board.setPlayer(players.get(3), 0, 16);
+
+        board.printBoard();
     }
 
     public Player getCurrentTurn() {
@@ -87,14 +89,16 @@ public class GameManager {
         return result + "\nCard is not found.";
     }
     
-    public int rollDice() {
+    public void rollDice() {
         Dice dice1 = new Dice();
         Dice dice2 = new Dice();
         int dice1Dots = dice1.getNumDots();
         int dice2Dots = dice2.getNumDots();
         int roll = dice1Dots + dice2Dots;
         System.out.println("Dice 1: " + dice1Dots + "\nDice 2: " + dice2Dots + "\nRoll: " + roll);
-        return roll;
+        
+        Player player = players.get(currentPlayerIndex);
+        player.setRoll(roll);
     }
 
     // public void movePlayer(int steps) {
@@ -110,41 +114,48 @@ public class GameManager {
     public void takeTurn() {
         Player current = getCurrentTurn();
         System.out.println("\nPlayer " + (currentPlayerIndex + 1) + " (" + current.getCharacterName() + ")'s turn:");
-        steps = rollDice();
+        rollDice();
 
         // temp movement test
-        board.setPlayer(current, current.getCol() + 1, current.getRow());
+        // board.setPlayer(current, current.getRow(), current.getRow());
         // movePlayer(steps);
         // current.setRoom();
     }
 
     public void playerMoves() {
         Player current = getCurrentTurn();
-        System.out.println("\nPlayer " + (currentPlayerIndex + 1) + "'s turn");
+        //System.out.println("\nPlayer " + (currentPlayerIndex + 1) + "'s turn");
         
         // TEMP TEST POSITION
-        current.setPosition(23, 7);
+        // board.setPlayer(current, current.getRow(), current.getCol());
+        //takeTurn();
 
-        // TEMP TEST ROLL
-        int roll = 3;
+        Tile t = board.getTile(current.getRow(), current.getCol());
 
-        System.out.println("Current Position: (" +current.getRow() + ", " + current.getCol() + ")");
+        if (t.isRoom()) {
+            System.out.println("Player " + (currentPlayerIndex + 1) + " is in the " + t.getConnectedRoom().getName());
+        } else {
+            System.out.print("Current Position: (" +current.getRow() + ", " + current.getCol() + ")");
+        }
         
         moves = new ArrayList<>();
-        moves = board.getValidMoves(current, roll);
+        moves = board.getValidMoves(current, current.getRoll());
         System.out.println("\nValid Moves:");
         
-        for (Location move : moves) {
-            if (move instanceof Tile) {
-                Tile tile = (Tile) move;
-                
-                System.out.println("Hallway: (" + tile.getRow() + ", " + tile.getCol() + ")");
-            } 
-            else if (move instanceof Room) {
-                Room room = (Room) move;
-                System.out.println("Room: " + room.getName());
-            }
+        for (Tile tile : moves) {
+            System.out.println(tile.getRow() + ", " + tile.getCol());
         }
+
+        Tile chosen = moves.get(0); // TEMP: auto-pick first move
+        board.setPlayer(current, chosen.getRow(), chosen.getCol());
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public int getSteps() {
+        return steps;
     }
 
 }

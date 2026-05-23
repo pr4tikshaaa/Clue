@@ -47,6 +47,7 @@ public class Tile implements Location {
         }
     }
 
+
     // public Room getRoom() {
     //     return ;
     // }
@@ -74,12 +75,12 @@ public class Tile implements Location {
     }
 
     public String toString() {
-        if (isRoom()) {
+        if (isOccupied()) {
+            return "P";
+        } else if (isRoom()) {
             return "X".substring(0, 1);
         } else if (isDoorway()) {
-            return "D".substring(0, 1);
-        } else if (occupied) {
-            return "P";
+            return "D";
         } else {
             return "-".substring(0, 1);
         }
@@ -102,6 +103,7 @@ public class Tile implements Location {
         }
     }
 
+
     // private void setSecretPassage(Room secret) {
     //     secretPassage = secret;
     // }
@@ -116,5 +118,17 @@ public class Tile implements Location {
 
     public void setOccupied(boolean occupied) {
         this.occupied = occupied;
+    }
+
+    public boolean equals(Object obj) {
+        if (obj instanceof Tile) {
+            Tile other = (Tile) obj;
+            return (row == other.row && col == other.col);
+        }
+        return false;
+    }
+
+    public int hashCode() {
+        return row*100 + col;
     }
 }

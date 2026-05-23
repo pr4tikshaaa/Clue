@@ -10,6 +10,7 @@ public class Player {
     private int col;
     private Location location;
     private Room currentRoom;
+    private int roll;
     // private int roomCount;
     // private GameManager game;
     
@@ -29,12 +30,9 @@ public class Player {
     public String getCharacterName() {
         return characterName;
     }
-    /**
-     * needed for UIClueGame to update what character they are
-     */
-    public void setCharacterName(String charName)
-    {
-        characterName = charName;
+
+    public void setCharacterName(String name) {
+        characterName = name;
     }
 
     public ArrayList<Card> getHand() {
@@ -71,7 +69,7 @@ public class Player {
         this.location = location;
     }
 
-    public Location geLocation() {
+    public Location getLocation() {
         return location;
     }
 
@@ -87,13 +85,21 @@ public class Player {
         return col;
     }
 
-    public boolean isInRoom() {
-        if (currentRoom != null) {
-            return true;
-        } else {
-            return false;
-        }
+    public void setRoll(int r) {
+        roll = r;
     }
+
+    public int getRoll() {
+        return roll;
+    }
+
+    // public boolean isInRoom() {
+    //     if (currentRoom != null) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
 
 
 /*     public String setRoom() {

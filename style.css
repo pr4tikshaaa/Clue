@@ -1,0 +1,90 @@
+/* Smooth, dark background canvas */
+.root-container {
+    -fx-background-color: #0b1324;
+}
+
+/* Sleek, filled rounded menu card containers */
+.setup-card {
+    -fx-background-color: #162136;
+    -fx-background-radius: 16px;
+    -fx-padding: 30px;
+}
+
+/* Clean, modern typography labels using Bernoru */
+.title-text {
+    -fx-font-family: "Bernoru", "Georgia"; /* Falls back to Georgia if system sync fails */
+    -fx-font-weight: bold;
+    -fx-text-fill: #deb86b; /* Warm premium gold */
+}
+
+.body-text {
+    -fx-font-family: "Bernoru", "Georgia";
+    -fx-font-weight: bold;
+    -fx-text-fill: #f5f6f8; /* High-contrast crisp white */
+}
+
+/* Premium custom pill-shaped buttons */
+.sleek-button {
+    -fx-background-color: #a62337;
+    -fx-background-radius: 24px;
+    -fx-text-fill: #f5f6f8;
+    -fx-font-family: "Bernoru", "Georgia";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 30px 12px 30px;
+    -fx-cursor: hand;
+}
+
+.sleek-button:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(three-pass-box, rgba(166, 35, 55, 0.7), 18, 0.6, 0, 0);
+}
+
+.secondary-button {
+    -fx-background-color: #162136;
+    -fx-background-radius: 24px;
+    -fx-text-fill: #f5f6f8;
+    -fx-font-family: "Bernoru", "Georgia";
+    -fx-font-weight: bold;
+    -fx-padding: 12px 30px 12px 30px;
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(three-pass-box, rgba(34, 49, 79, 0.8), 18, 0.6, 0, 0);
+}
+
+/* Dropdown layouts */
+.combo-box {
+    -fx-background-color: #162136;
+    -fx-background-radius: 8px;
+    -fx-font-family: "Bernoru", "Georgia";
+    -fx-padding: 5px;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: #f5f6f8 !important;
+}
+
+.combo-box:focused .list-cell {
+    -fx-text-fill: #f5f6f8 !important;
+}
+
+.combo-box-popup .list-view {
+    -fx-background-color: #162136;
+    -fx-background-radius: 8px;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: #162136;
+    -fx-text-fill: #f5f6f8 !important;
+    -fx-padding: 8px;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #22314f;
+    -fx-text-fill: #deb86b !important;
+}
