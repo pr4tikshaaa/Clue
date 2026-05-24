@@ -11,6 +11,7 @@ public class Player {
     private Location location;
     private Room currentRoom;
     private int roll;
+    private boolean isOut;
     // private int roomCount;
     // private GameManager game;
     
@@ -21,6 +22,7 @@ public class Player {
         // position = 0;
         // roomCount = 0;
         // currentRoom = "Walkway";
+        isOut = false;
     }
 
     public String getPlayerName() {
@@ -91,6 +93,16 @@ public class Player {
 
     public int getRoll() {
         return roll;
+    }
+
+    // Inside Player.java:
+    
+    public boolean isOut() {
+        return isOut;
+    }
+    
+    public void setOut(boolean out) { 
+        this.isOut = out;
     }
 
     // public boolean isInRoom() {

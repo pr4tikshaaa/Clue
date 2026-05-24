@@ -15,10 +15,12 @@ public class GameManager {
         board = new Board();
         cardDeck.dealCards(players);
 
-        board.setPlayer(players.get(0), 23, 9);
-        board.setPlayer(players.get(1), 23, 14);
-        board.setPlayer(players.get(2), 17, 0);
-        board.setPlayer(players.get(3), 0, 16);
+        if (players.size() > 0) board.setPlayer(players.get(0), 23, 9);
+        if (players.size() > 1) board.setPlayer(players.get(1), 23, 14);
+        if (players.size() > 2) board.setPlayer(players.get(2), 17, 0);
+        if (players.size() > 3) board.setPlayer(players.get(3), 0, 16);
+        if (players.size() > 4) board.setPlayer(players.get(4), 7, 23);
+        if (players.size() > 5) board.setPlayer(players.get(5), 18, 23);
 
         board.printBoard();
     }
@@ -46,20 +48,21 @@ public class GameManager {
         return cardDeck.getCaseFile();
     }
 
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
     public void printGameState() {
         System.out.println("Current player: " +  players.get(currentPlayerIndex).getCharacterName() + " (" + players.get(currentPlayerIndex).getPlayerName() + ")");
     }
 
-    public String makeAccusation(Card suspectGuess, Card weaponGuess, Card roomGuess) {
-        String result = "Suspect accusation: " + suspectGuess.getName() + "\nWeapon accusation: " + weaponGuess.getName() + "\nRoom accusation: " + roomGuess.getName();
+    public boolean makeAccusation(String suspectGuess, String weaponGuess, String roomGuess) {
         CaseFile caseFile = cardDeck.getCaseFile();
-        result += "\nAccusation is ";
-        if (caseFile.isCorrect(suspectGuess, weaponGuess, roomGuess)) {
-            result += "correct";
+        if (caseFile.isCorrect(cardDeck.getCard(suspectGuess), cardDeck.getCard(weaponGuess), cardDeck.getCard(roomGuess))) {
+            return true;
         } else {
-            result += "incorrect";
+            return false;
         }
-        return result;
     }
 
     public String makeSuggestion(Card suspectGuess, Card weaponGuess) {
@@ -156,6 +159,43 @@ public class GameManager {
 
     public int getSteps() {
         return steps;
+    }
+
+    public Player findDisprovingPlayer(String suspect, String weapon, String room) {
+        for (int i = currentPlayerIndex + 1; i < players.size(); i++) {
+            int nextIndex = i;
+            ArrayList<String> matchingCards = getDisprovingCards(players.get(nextIndex), suspect, weapon, room);
+            if (!matchingCards.isEmpty()) {
+                return players.get(nextIndex);
+            }
+        }
+
+        for (int i = 0; i < players.size(); i++) {
+            int nextIndex = i;
+            ArrayList<String> matchingCards = getDisprovingCards(players.get(nextIndex), suspect, weapon, room);
+            if (!matchingCards.isEmpty()) {
+                return players.get(nextIndex);
+            }
+        }
+
+        return null;
+    }
+
+    public ArrayList<String> getDisprovingCards(Player player, String suspect, String weapon, String room) {
+        ArrayList<String> matches = new ArrayList<>();
+        if (player == null) {
+            return matches;
+        }
+
+        for (Card card : player.getHand()) {
+            String cardName = card.getName();
+
+            if (cardName.equals(suspect) || cardName.equals(weapon) || cardName.equals(room)) {
+                matches.add(cardName);
+            }
+        }
+
+        return matches;
     }
 
 }

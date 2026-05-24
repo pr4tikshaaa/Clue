@@ -108,20 +108,69 @@ public class Board {
         board[14][16] = new Tile(14, 16, "Walkway", null);
         board[14][17] = new Tile(14, 17, "Walkway", null);
         board[14][18] = new Tile(14, 18, "Walkway", null);
-        
-        board[6][6] = new Tile(6, 6, "Walkway", null);
-        board[10][6] = new Tile(10, 6, "Walkway", null);
-        board[23][9] = new Tile(23, 9, "Walkway", null);
-        board[23][8] = new Tile(23, 8, "Walkway", null);
-        board[22][9] = new Tile(22, 9, "Walkway", null);
-        board[22][8] = new Tile(22, 8, "Walkway", null);
-        board[22][14] = new Tile(22, 14, "Walkway", null);
-        board[22][15] = new Tile(22, 15, "Walkway", null);
-        board[23][14] = new Tile(23, 14, "Walkway", null);
-        board[23][15] = new Tile(23, 15, "Walkway", null);
-        board[14][16] = new Tile(14, 16, "Walkway", null);
-        board[14][17] = new Tile(14, 17, "Walkway", null);
-        board[14][18] = new Tile(14, 18, "Walkway", null);
+
+        conservatory.addPlayerSpot(board[20][1]);
+        conservatory.addPlayerSpot(board[20][2]);
+        conservatory.addPlayerSpot(board[20][3]);
+        conservatory.addPlayerSpot(board[21][1]);
+        conservatory.addPlayerSpot(board[21][2]);
+        conservatory.addPlayerSpot(board[21][3]);
+
+        billiardRoom.addPlayerSpot(board[13][1]);
+        billiardRoom.addPlayerSpot(board[13][2]);
+        billiardRoom.addPlayerSpot(board[13][3]);
+        billiardRoom.addPlayerSpot(board[14][1]);
+        billiardRoom.addPlayerSpot(board[14][2]);
+        billiardRoom.addPlayerSpot(board[14][3]);
+
+        library.addPlayerSpot(board[7][1]);
+        library.addPlayerSpot(board[7][2]);
+        library.addPlayerSpot(board[7][3]);
+        library.addPlayerSpot(board[8][1]);
+        library.addPlayerSpot(board[8][2]);
+        library.addPlayerSpot(board[8][3]);
+
+        study.addPlayerSpot(board[1][1]);
+        study.addPlayerSpot(board[1][2]);
+        study.addPlayerSpot(board[1][3]);
+        study.addPlayerSpot(board[2][1]);
+        study.addPlayerSpot(board[2][2]);
+        study.addPlayerSpot(board[2][3]);
+
+        hall.addPlayerSpot(board[2][10]);
+        hall.addPlayerSpot(board[2][11]);
+        hall.addPlayerSpot(board[2][12]);
+        hall.addPlayerSpot(board[3][10]);
+        hall.addPlayerSpot(board[3][11]);
+        hall.addPlayerSpot(board[3][12]);
+
+        lounge.addPlayerSpot(board[2][19]);
+        lounge.addPlayerSpot(board[2][20]);
+        lounge.addPlayerSpot(board[2][21]);
+        lounge.addPlayerSpot(board[3][19]);
+        lounge.addPlayerSpot(board[3][20]);
+        lounge.addPlayerSpot(board[3][21]);
+
+        diningRoom.addPlayerSpot(board[10][19]);
+        diningRoom.addPlayerSpot(board[10][20]);
+        diningRoom.addPlayerSpot(board[10][21]);
+        diningRoom.addPlayerSpot(board[11][19]);
+        diningRoom.addPlayerSpot(board[11][20]);
+        diningRoom.addPlayerSpot(board[11][21]);
+
+        kitchen.addPlayerSpot(board[19][20]);
+        kitchen.addPlayerSpot(board[19][21]);
+        kitchen.addPlayerSpot(board[19][22]);
+        kitchen.addPlayerSpot(board[20][20]);
+        kitchen.addPlayerSpot(board[20][21]);
+        kitchen.addPlayerSpot(board[20][22]);
+
+        ballroom.addPlayerSpot(board[18][11]);
+        ballroom.addPlayerSpot(board[18][12]);
+        ballroom.addPlayerSpot(board[18][13]);
+        ballroom.addPlayerSpot(board[19][11]);
+        ballroom.addPlayerSpot(board[19][12]);
+        ballroom.addPlayerSpot(board[19][13]);
 
         kitchen.setSecretPassage(study);
         study.setSecretPassage(kitchen);
@@ -142,49 +191,74 @@ public class Board {
         validMoves = new ArrayList<>();
         boolean[][] visited = new boolean[board.length][board[0].length];
         findMoves(player.getRow(), player.getCol(), roll, visited);
+        Tile currentTile = board[player.getRow()][player.getCol()];
+
+        if (currentTile.isRoom()) {
+            Room currentRoom = currentTile.getConnectedRoom();
+            
+            if (currentRoom.getSecretPassage() != null) {
+                Room destinationRoom = currentRoom.getSecretPassage();
+
+                validMoves.add(destinationRoom.getPlayerSpot());
+            }
+        }
         return validMoves;
     }
     
     private void findMoves(int row, int col, int stepsLeft, boolean[][] visited) {
-        if (!isValidLocation(row, col)) return;
-        if (visited[row][col]) return;
+        if (!isValidLocation(row, col)) {
+            return;
+        }
+
+        if (visited[row][col]) {
+            return;
+        }
 
         Tile current = board[row][col];
-        visited[row][col] = true;
 
-        if (current.getTileType().equals("Room")) {
-            boolean roomAlreadyExists = false;
-            for (Tile move : validMoves) {
-                if (move.getConnectedRoom() == current.getConnectedRoom()) {
-                    roomAlreadyExists = true;
-                    break;
-                }
-            }
-            if (!roomAlreadyExists) {
-                validMoves.add(current);
-            }
-            visited[row][col] = false;
-            return; 
-        }
+        visited[row][col] = true;
 
         if (stepsLeft == 0) {
             if (current.isWalkway() || current.isDoorway()) {
-                if (!validMoves.contains(current)) {
+                validMoves.add(current);
+            } else if (current.isRoom()) {
+                boolean alreadyAdded = false;
+
+                for (Tile t : validMoves) {
+                    if (t.getConnectedRoom() == current.getConnectedRoom()) {
+                        alreadyAdded = true;
+                        break;
+                    }
+                }
+
+                if (!alreadyAdded) {
                     validMoves.add(current);
                 }
             }
+
             visited[row][col] = false;
             return;
         }
 
-        if (current.isWalkway() || current.isDoorway()) {
-            if (!validMoves.contains(current)) {
-                validMoves.add(current);
-            }
-        }
+        ArrayList<Tile> neighbors = getNeighbors(current);
 
-        for (Tile neighbor : getNeighbors(current)) {
-            findMoves(neighbor.getRow(), neighbor.getCol(), stepsLeft - 1, visited);
+        for (Tile next : neighbors) {
+            if (next.isRoom() && !current.isRoom()) {
+                boolean alreadyAdded = false;
+
+                for (Tile t : validMoves) {
+                    if (t.getConnectedRoom() == next.getConnectedRoom()) {
+                        alreadyAdded = true;
+                        break;
+                    }
+                }
+
+                if (!alreadyAdded) {
+                    validMoves.add(next);
+                }
+            } else {
+                findMoves(next.getRow(), next.getCol(), stepsLeft - 1, visited);
+            }
         }
 
         visited[row][col] = false;
@@ -199,7 +273,20 @@ public class Board {
             return;
         }
 
-        if (board[r][c].isOccupied()) {
+        Tile clickedTile = board[r][c];
+
+        if (clickedTile.getConnectedRoom() != null) {
+            Room room = clickedTile.getConnectedRoom();
+
+            Tile spot = room.getPlayerSpot();
+
+            if (spot != null) {
+                r = spot.getRow();
+                c = spot.getCol();
+            }
+        }
+
+        if (clickedTile.isOccupied()) {
             return;
         }
 
@@ -228,7 +315,7 @@ public class Board {
         int row = current.getRow();
         int col = current.getCol();
 
-        if (current.getTileType().equals("Room") && current.getConnectedRoom() != null) {
+        if (current.isRoom() && current.getConnectedRoom() != null) {
             return current.getConnectedRoom().getDoors();
         }
 

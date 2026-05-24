@@ -20,6 +20,15 @@ public class UIClueGame extends Application {
     private ArrayList<Player> players = new ArrayList<>();
     private int numPlayers;
     private final String[] suspectsList = {" ", "Col. Mustard", "Miss Scarlet", "Prof. Plum", "Mr. Green", "Mrs. Peacock", "Dr. Orchid"};
+    private final String[] roomsList = {"Kitchen", "Ballroom", "Conservatory", "Dining Room", "Billiard Room", "Library", "Lounge", "Hall", "Study"};
+
+    private GameManager gameManager;
+    private FXBoardPanel visualBoard;
+    private Label statusLabel;
+    
+    private Button startTurnBtn;
+    private Button rollDiceBtn;
+    private Button makeAccusationBtn; // Added permanent tracking reference
 
     @Override
     public void start(Stage primaryStage) {
@@ -27,7 +36,6 @@ public class UIClueGame extends Application {
         rootContainer.getStyleClass().add("root-container");
 
         Scene scene = new Scene(rootContainer, 800, 740);
-        // Attaches your clean custom website-like CSS rules
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
         // Initialize and show the Home Screen instantly
@@ -40,63 +48,52 @@ public class UIClueGame extends Application {
     }
 
     private VBox buildHomeScreen() {
-    VBox homeLayout = new VBox(20); // 20px spacing between your elements
-    homeLayout.setAlignment(Pos.CENTER);
+        VBox homeLayout = new VBox(20);
+        homeLayout.setAlignment(Pos.CENTER);
 
-    // 1. BACKGROUND INITIALIZATION (Your cover art setup goes here)
-
-    // 2. EXTRA LARGE CUSTOM LOGO SETUP
-    StackPane logoContainer = new StackPane();
-
-    try {
-        File logoFile = new File("clue_cover.jpg"); 
-        if (logoFile.exists()) {
-            Image logoImg = new Image(logoFile.toURI().toString());
-            ImageView logoView = new ImageView(logoImg);
-            
-            logoView.setPreserveRatio(true);
-            logoView.setFitWidth(650);   // Keeps your logo wide and bold
-            logoView.setFitHeight(200);  // Explicitly limits image vertical canvas height
-            
-            logoContainer.getChildren().add(logoView);
-        } else {
-            Label fallbackLabel = new Label("[ LOGO PLACEHOLDER ]");
-            fallbackLabel.getStyleClass().add("title-text");
-            fallbackLabel.setStyle("-fx-font-size: 54px;");
-            logoContainer.getChildren().add(fallbackLabel);
+        StackPane logoContainer = new StackPane();
+        try {
+            File logoFile = new File("clue_cover.jpg"); 
+            if (logoFile.exists()) {
+                Image logoImg = new Image(logoFile.toURI().toString());
+                ImageView logoView = new ImageView(logoImg);
+                logoView.setPreserveRatio(true);
+                logoView.setFitWidth(650);   
+                logoView.setFitHeight(200);  
+                logoContainer.getChildren().add(logoView);
+            } else {
+                Label fallbackLabel = new Label("[ LOGO PLACEHOLDER ]");
+                fallbackLabel.getStyleClass().add("title-text");
+                fallbackLabel.setStyle("-fx-font-size: 54px;");
+                logoContainer.getChildren().add(fallbackLabel);
+            }
+        } catch (Exception e) {
+            System.out.println("Could not load custom logo graphic.");
         }
-    } catch (Exception e) {
-        System.out.println("Could not load custom logo graphic.");
+        
+        logoContainer.setOpacity(0.0);
+        logoContainer.setTranslateY(40); 
+        
+        FadeTransition fadeInLogo = new FadeTransition(Duration.millis(1200), logoContainer);
+        fadeInLogo.setFromValue(0.0); 
+        fadeInLogo.setToValue(1.0);
+        
+        TranslateTransition riseUpLogo = new TranslateTransition(Duration.millis(1200), logoContainer);
+        riseUpLogo.setFromY(40); 
+        riseUpLogo.setToY(0); 
+        
+        ParallelTransition introAnim = new ParallelTransition(fadeInLogo, riseUpLogo);
+        introAnim.setDelay(Duration.millis(300));
+        introAnim.play();
+
+        Button startBtn = new Button("START");
+        startBtn.getStyleClass().add("sleek-button");
+        startBtn.setOnAction(e -> fadeToNextScreen(buildPlayerCountScreen()));
+
+        homeLayout.setPadding(new Insets(20)); 
+        homeLayout.getChildren().addAll(logoContainer, startBtn);
+        return homeLayout;
     }
-    
-    // --- INTRO ANIMATION TRACK ---
-    logoContainer.setOpacity(0.0);
-    logoContainer.setTranslateY(40); 
-    
-    FadeTransition fadeInLogo = new FadeTransition(Duration.millis(1200), logoContainer);
-    fadeInLogo.setFromValue(0.0); 
-    fadeInLogo.setToValue(1.0);
-    
-    TranslateTransition riseUpLogo = new TranslateTransition(Duration.millis(1200), logoContainer);
-    riseUpLogo.setFromY(40); 
-    riseUpLogo.setToY(0); 
-    
-    ParallelTransition introAnim = new ParallelTransition(fadeInLogo, riseUpLogo);
-    introAnim.setDelay(Duration.millis(300));
-    introAnim.play();
-
-    // 3. INTERACTIVE START BUTTON SETUP
-    Button startBtn = new Button("START");
-    startBtn.getStyleClass().add("sleek-button");
-    startBtn.setOnAction(e -> fadeToNextScreen(buildPlayerCountScreen()));
-
-    // Adds a clean, universal frame padding inside the VBox window
-    homeLayout.setPadding(new Insets(20)); 
-
-    // Layers them sequentially: Logo on top, Start Button cleanly below it
-    homeLayout.getChildren().addAll(logoContainer, startBtn);
-    return homeLayout;
-}
 
     private VBox buildPlayerCountScreen() {
         VBox cardContainer = new VBox(25);
@@ -176,7 +173,13 @@ public class UIClueGame extends Application {
         startBtn.setOnAction(e -> {
             if (checkCharacters(players)) {
                 errorLabel.setVisible(false);
-                fadeToNextScreen(buildBoardScreen());
+                Stage primaryWindow = (Stage) rootContainer.getScene().getWindow();
+                
+                // Initialize the backend engine with the selected human configuration
+                gameManager = new GameManager(this.players);
+
+                // Run hand previews using the managed session instance
+                launchPreGameHandPreview(primaryWindow, gameManager, 0);
             } else {
                 errorLabel.setVisible(true);
             }
@@ -190,159 +193,496 @@ public class UIClueGame extends Application {
     }
 
     private boolean checkCharacters(ArrayList<Player> players) {
-    ArrayList<String> names = new ArrayList<>();
-    for (Player p : players) {
-        String character = p.getCharacterName();
-        // If they left it blank or picked a duplicate character, return false
-        if (character == null || character.equals(" ") || names.contains(character)) {
-            return false;
-        }
-        names.add(character);
-    }
-    return true;
-}
-
-    // Add these instance variables to the top of your UIClueGame class if you don't have them:
-private GameManager gameManager;
-private FXBoardPanel visualBoard;
-private Label statusLabel;
-
-private BorderPane buildBoardScreen() {
-    BorderPane boardLayout = new BorderPane();
-    
-    // CRUCIAL BUG FIX: Your GameManager constructor strictly demands EXACTLY 4 players minimum
-    // to run its token placement rules without throwing an IndexOutOfBounds Exception.
-    // If the user selected 3 players, we temporarily patch a dummy AI character to satisfy the engine.
-    if (this.players.size() < 4) {
-        // Find a character name from the list that isn't currently assigned
-        String backupCharacter = "Dr. Orchid";
-        for (String suspect : suspectsList) {
-            if (!suspect.equals(" ") && !checkCharactersContains(suspect)) {
-                backupCharacter = suspect;
-                break;
+        ArrayList<String> names = new ArrayList<>();
+        for (Player p : players) {
+            String character = p.getCharacterName();
+            if (character == null || character.equals(" ") || names.contains(character)) {
+                return false;
             }
+            names.add(character);
         }
-        this.players.add(new Player("Bot Player", backupCharacter));
+        return true;
     }
-    
-    // 1. Initialize our backend engine safely with 4 players loaded
-    gameManager = new GameManager(this.players);
-    
-    // 2. Instantiate your custom canvas layout using the manager's board
-    visualBoard = new FXBoardPanel(gameManager.getBoard()); 
-    boardLayout.setCenter(visualBoard);
 
-    // 3. Action bar status reporting label setup
-    statusLabel = new Label("Game Started. Click 'START TURN' to begin.");
-    statusLabel.getStyleClass().add("body-text");
-    statusLabel.setStyle("-fx-text-fill: #deb86b; -fx-padding: 0 0 0 20;");
-
-    // 4. Create your structural top bar controls
-    HBox topActionBar = new HBox(20);
-    topActionBar.setPadding(new Insets(15));
-    topActionBar.setAlignment(Pos.CENTER_LEFT);
-    topActionBar.setStyle("-fx-background-color: #0b1324;");
-
-    Button startTurnBtn = new Button("START TURN");
-    startTurnBtn.getStyleClass().add("secondary-button");
-    
-    Button rollDiceBtn = new Button("ROLL DICE 🎲");
-    rollDiceBtn.getStyleClass().add("sleek-button");
-    rollDiceBtn.setDisable(true); 
-
-    // START TURN ACTION
-    startTurnBtn.setOnAction(e -> {
-        Player current = gameManager.getCurrentTurn();
-        statusLabel.setText(current.getPlayerName() + " (" + current.getCharacterName() + ")'s Turn");
-        startTurnBtn.setDisable(true);
-        rollDiceBtn.setDisable(false);
-    });
-
-    // ROLL DICE ACTION
-    rollDiceBtn.setOnAction(e -> {
-        Player current = gameManager.getCurrentTurn();
-        gameManager.rollDice(); 
-        int steps = current.getRoll();
+    private BorderPane buildBoardScreen(Stage stage, GameManager manager) {
+        this.gameManager = manager;
+        BorderPane boardLayout = new BorderPane();
         
-        statusLabel.setText(current.getCharacterName() + " rolled a " + steps + "! Click a highlighted tile to move.");
-        rollDiceBtn.setDisable(true);
+        visualBoard = new FXBoardPanel(gameManager.getBoard(), this.players); 
+        boardLayout.setCenter(visualBoard);
 
-        // Fetch valid grid options from your pathfinding algorithm
-        ArrayList<Tile> validTiles = gameManager.getBoard().getValidMoves(current, steps);
+        statusLabel = new Label("Game Started. Click 'START TURN' to begin.");
+        statusLabel.getStyleClass().add("body-text");
+        statusLabel.setStyle("-fx-text-fill: #deb86b; -fx-padding: 0 0 0 20;");
+
+        HBox topActionBar = new HBox(20);
+        topActionBar.setPadding(new Insets(15));
+        topActionBar.setAlignment(Pos.CENTER_LEFT);
+        topActionBar.setStyle("-fx-background-color: #0b1324;");
+
+        startTurnBtn = new Button("START TURN");
+        startTurnBtn.getStyleClass().add("secondary-button");
         
-        // Tells your FXBoardPanel canvas to highlight these legal options visually
-        visualBoard.highlightPossibleMoves(validTiles);
+        rollDiceBtn = new Button("ROLL DICE 🎲");
+        rollDiceBtn.getStyleClass().add("sleek-button");
+        rollDiceBtn.setDisable(true); 
 
-        // Map mouse click listeners onto the highlighted visual tiles
-        visualBoard.setOnTileClickedListener(clickedTile -> {
-            if (validTiles.contains(clickedTile)) {
-                // Update underlying model array coordinates
+        // FIXED: Added permanent accusation trigger button layout
+        makeAccusationBtn = new Button("MAKE ACCUSATION ⚖️");
+        makeAccusationBtn.setStyle("-fx-background-color: #a62b2b; -fx-text-fill: white; -fx-font-weight: bold;");
+        makeAccusationBtn.setDisable(true);
+
+        startTurnBtn.setOnAction(e -> {
+            Player current = gameManager.getCurrentTurn();
+            statusLabel.setText(current.getPlayerName() + " (" + current.getCharacterName() + ")'s Turn");
+            startTurnBtn.setDisable(true);
+            rollDiceBtn.setDisable(false);
+            makeAccusationBtn.setDisable(false); // Can accuse instead of moving/rolling
+        });
+
+        rollDiceBtn.setOnAction(e -> {
+            Player current = gameManager.getCurrentTurn();
+            gameManager.rollDice(); 
+            int steps = current.getRoll();
+            
+            statusLabel.setText(current.getCharacterName() + " rolled a " + steps + "! Click a highlighted tile to move.");
+            rollDiceBtn.setDisable(true);
+            makeAccusationBtn.setDisable(true); // Moving commits your turn choice
+
+            ArrayList<Tile> validTiles = gameManager.getBoard().getValidMoves(current, steps);
+            visualBoard.highlightPossibleMoves(validTiles);
+
+            visualBoard.setOnTileClickedListener(clickedTile -> {
                 gameManager.setPlayerPos(clickedTile.getRow(), clickedTile.getCol());
-                
-                // Clear active overlay frames and update canvas asset icons
                 visualBoard.clearHighlights();
                 visualBoard.refreshPlayerPositions(); 
                 
-                // Switch turn back over to next investigator row entry
-                gameManager.setNextTurn();
-                startTurnBtn.setDisable(false);
-                statusLabel.setText("Turn ended. Waiting for next player...");
+                if (gameManager.getBoard().getTile(clickedTile.getRow(), clickedTile.getCol()).getConnectedRoom() != null) {
+                    Room currentRoom = gameManager.getBoard().getTile(clickedTile.getRow(), clickedTile.getCol()).getConnectedRoom();
+                    launchSuggestionFlow(gameManager.getCurrentTurn(), currentRoom);
+                } else {
+                    wrapUpTurn(); 
+                }
+            });
+        });
+
+        makeAccusationBtn.setOnAction(e -> launchAccusationFlow(gameManager.getCurrentTurn()));
+
+        // Use a Spacer object to push the accusation trigger to the far right edge cleanly
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        topActionBar.getChildren().addAll(startTurnBtn, rollDiceBtn, statusLabel, spacer, makeAccusationBtn);
+        boardLayout.setTop(topActionBar);
+
+        return boardLayout;
+    }
+
+    private void launchAccusationFlow(Player accusingPlayer) {
+        javafx.stage.Stage dialog = new javafx.stage.Stage();
+        dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        dialog.setTitle("FINAL ACCUSATION: HIGH RISK CHOICE");
+        dialog.setResizable(false);
+
+        StackPane modalRoot = new StackPane();
+        modalRoot.setStyle("-fx-background-color: #0b1324; -fx-padding: 30;");
+        modalRoot.setPrefSize(450, 480);
+        
+        Scene dialogScene = new Scene(modalRoot);
+        dialogScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialog.setScene(dialogScene);
+
+        VBox layout = new VBox(12);
+        layout.setAlignment(Pos.CENTER);
+
+        Label title = new Label("DECLARE YOUR FINAL SOLUTION");
+        title.getStyleClass().add("title-text");
+        title.setStyle("-fx-text-fill: #ef5350; -fx-font-size: 18px;");
+
+        Label warning = new Label("⚠️ If wrong, you are eliminated from taking turns!");
+        warning.setStyle("-fx-text-fill: #b5c2d6; -fx-font-style: italic; -fx-font-size: 12px;");
+
+        ComboBox<String> suspectCombo = new ComboBox<>();
+        for (String s : suspectsList) { if(!s.trim().isEmpty()) suspectCombo.getItems().add(s); }
+        suspectCombo.setValue(suspectCombo.getItems().get(0));
+        suspectCombo.getStyleClass().add("combo-box");
+
+        ComboBox<String> weaponCombo = new ComboBox<>();
+        weaponCombo.getItems().addAll("Candlestick", "Knife", "Lead Pipe", "Revolver", "Rope", "Wrench");
+        weaponCombo.setValue("Candlestick");
+        weaponCombo.getStyleClass().add("combo-box");
+
+        ComboBox<String> roomCombo = new ComboBox<>();
+        roomCombo.getItems().addAll(roomsList);
+        roomCombo.setValue(roomsList[0]);
+        roomCombo.getStyleClass().add("combo-box");
+
+        Button submitBtn = new Button("SUBMIT FINAL ACCUSATION");
+        submitBtn.setStyle("-fx-background-color: #a62b2b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20;");
+
+        layout.getChildren().addAll(
+            title, warning, 
+            new Label("Suspect Case File:"), suspectCombo, 
+            new Label("Murder Weapon Asset:"), weaponCombo, 
+            new Label("Crime Scene Location:"), roomCombo,
+            submitBtn
+        );
+        modalRoot.getChildren().add(layout);
+
+        submitBtn.setOnAction(e -> {
+            String suspect = suspectCombo.getValue();
+            String weapon = weaponCombo.getValue();
+            String room = roomCombo.getValue();
+
+            // Check against backend envelope values
+            boolean isCorrect = gameManager.makeAccusation(suspect, weapon, room);
+            modalRoot.getChildren().clear();
+
+            VBox resultsBox = new VBox(20);
+            resultsBox.setAlignment(Pos.CENTER);
+
+            if (isCorrect) {
+                Label winLabel = new Label("🎉 CORRECT! " + accusingPlayer.getPlayerName().toUpperCase() + " SOLVED THE CRIME!");
+                winLabel.setStyle("-fx-text-fill: #66bb6a; -fx-font-size: 20px; -fx-font-weight: bold;");
+                
+                Label detailLabel = new Label("It was indeed " + suspect + " in the " + room + " with the " + weapon + ".");
+                detailLabel.getStyleClass().add("body-text");
+
+                Button exitBtn = new Button("CLOSE GAME");
+                exitBtn.getStyleClass().add("sleek-button");
+                exitBtn.setOnAction(ev -> {
+                    dialog.close();
+                });
+                resultsBox.getChildren().addAll(winLabel, detailLabel, exitBtn);
+            } else {
+                Label loseLabel = new Label("❌ INCORRECT ACCUSATION!");
+                loseLabel.setStyle("-fx-text-fill: #ef5350; -fx-font-size: 20px; -fx-font-weight: bold;");
+
+                Label penaltyLabel = new Label(accusingPlayer.getPlayerName() + " is out of the game, but must still reveal cards to disprove suggestions.");
+                penaltyLabel.getStyleClass().add("body-text");
+                penaltyLabel.setWrapText(true);
+
+                // Set user state to out inside backend
+                accusingPlayer.setOut(true);
+
+                Button continueBtn = new Button("CONTINUE");
+                continueBtn.getStyleClass().add("sleek-button");
+                continueBtn.setOnAction(ev -> {
+                    dialog.close();
+                    wrapUpTurn();
+                });
+                resultsBox.getChildren().addAll(loseLabel, penaltyLabel, continueBtn);
+            }
+
+            modalRoot.getChildren().add(resultsBox);
+        });
+
+        dialog.showAndWait();
+    }
+
+    private void launchSuggestionFlow(Player suggestingPlayer, Room room) {
+        javafx.stage.Stage dialog = new javafx.stage.Stage();
+        dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        dialog.setTitle("ROOM ARRIVAL: MAKE A SUGGESTION");
+        dialog.setResizable(false);
+
+        StackPane modalRoot = new StackPane();
+        modalRoot.setStyle("-fx-background-color: #0b1324; -fx-padding: 30;");
+        modalRoot.setPrefSize(450, 400);
+        
+        Scene dialogScene = new Scene(modalRoot);
+        dialogScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        dialog.setScene(dialogScene);
+
+        VBox step1 = new VBox(15);
+        step1.setAlignment(Pos.CENTER);
+
+        Label title1 = new Label("MAKE A SUGGESTION IN THE " + room.getName().toUpperCase());
+        title1.getStyleClass().add("title-text");
+        title1.setStyle("-fx-text-fill: #deb86b; -fx-font-size: 16px;");
+
+        ComboBox<String> suspectCombo = new ComboBox<>();
+        for (String s : suspectsList) { if(!s.trim().isEmpty()) suspectCombo.getItems().add(s); }
+        suspectCombo.setValue(suspectCombo.getItems().get(0));
+        suspectCombo.getStyleClass().add("combo-box");
+
+        ComboBox<String> weaponCombo = new ComboBox<>();
+        weaponCombo.getItems().addAll("Candlestick", "Knife", "Lead Pipe", "Revolver", "Rope", "Wrench");
+        weaponCombo.setValue("Candlestick");
+        weaponCombo.getStyleClass().add("combo-box");
+
+        Button submitSuggestionBtn = new Button("SUBMIT SUGGESTION");
+        submitSuggestionBtn.getStyleClass().add("sleek-button");
+
+        step1.getChildren().addAll(title1, new Label("Suspect:"), suspectCombo, new Label("Weapon:"), weaponCombo, submitSuggestionBtn);
+        modalRoot.getChildren().add(step1);
+
+        submitSuggestionBtn.setOnAction(e -> {
+            String chosenSuspect = suspectCombo.getValue();
+            String chosenWeapon = weaponCombo.getValue();
+            String chosenRoom = room.getName();
+
+            Player disprovingPlayer = gameManager.findDisprovingPlayer(chosenSuspect, chosenWeapon, chosenRoom); 
+            ArrayList<String> matchingCards = gameManager.getDisprovingCards(disprovingPlayer, chosenSuspect, chosenWeapon, chosenRoom);
+
+            modalRoot.getChildren().clear();
+
+            if (disprovingPlayer == null || matchingCards.isEmpty()) {
+                VBox noDisproveBox = new VBox(20);
+                noDisproveBox.setAlignment(Pos.CENTER);
+                
+                Label lbl = new Label("Nobody could disprove your suggestion!");
+                lbl.getStyleClass().add("body-text");
+                lbl.setStyle("-fx-text-fill: #ef5350; -fx-font-size: 18px;");
+                
+                Button closeBtn = new Button("CONTINUE GAME");
+                closeBtn.getStyleClass().add("sleek-button");
+                closeBtn.setOnAction(ev -> {
+                    dialog.close();
+                    wrapUpTurn();
+                });
+
+                noDisproveBox.getChildren().addAll(lbl, closeBtn);
+                modalRoot.getChildren().add(noDisproveBox);
+            } else {
+                showPassDeviceScreen(modalRoot, suggestingPlayer, disprovingPlayer, matchingCards, dialog);
             }
         });
-    });
 
-    topActionBar.getChildren().addAll(startTurnBtn, rollDiceBtn, statusLabel);
-    boardLayout.setTop(topActionBar);
+        dialog.showAndWait();
+    }
 
-    return boardLayout;
-}
+    private void showPassDeviceScreen(StackPane root, Player localSuggPlayer, Player respondent, ArrayList<String> cards, javafx.stage.Stage stage) {
+        root.getChildren().clear();
+        VBox box = new VBox(20);
+        box.setAlignment(Pos.CENTER);
 
-// Quick helper method to find unassigned players during configuration safety patching
-private boolean checkCharactersContains(String name) {
-    for (Player p : this.players) {
-        if (p.getCharacterName() != null && p.getCharacterName().equals(name)) {
-            return true;
+        Label instructions = new Label("PASS DEVICE TO: " + respondent.getPlayerName().toUpperCase());
+        instructions.getStyleClass().add("title-text");
+        instructions.setStyle("-fx-text-fill: #deb86b; -fx-font-size: 18px;");
+
+        Label warning = new Label("Keep screen hidden from " + localSuggPlayer.getPlayerName() + "!");
+        warning.getStyleClass().add("body-text");
+
+        Button confirmIdentityBtn = new Button("I AM " + respondent.getPlayerName().toUpperCase());
+        confirmIdentityBtn.getStyleClass().add("secondary-button");
+        
+        confirmIdentityBtn.setOnAction(e -> showCardSelectionScreen(root, localSuggPlayer, respondent, cards, stage));
+
+        box.getChildren().addAll(instructions, warning, confirmIdentityBtn);
+        root.getChildren().add(box);
+    }
+
+    private void showCardSelectionScreen(StackPane root, Player localSuggPlayer, Player respondent, ArrayList<String> cards, javafx.stage.Stage stage) {
+        root.getChildren().clear();
+        VBox box = new VBox(15);
+        box.setAlignment(Pos.CENTER);
+
+        Label title = new Label(respondent.getPlayerName() + ", CHOOSE A CARD TO SHOW");
+        title.getStyleClass().add("title-text");
+
+        ToggleGroup cardGroup = new ToggleGroup();
+        VBox radioContainer = new VBox(10);
+        radioContainer.setAlignment(Pos.CENTER_LEFT);
+        radioContainer.setPadding(new javafx.geometry.Insets(0, 0, 0, 120));
+
+        for (String cardName : cards) {
+            RadioButton rb = new RadioButton(cardName);
+            rb.setToggleGroup(cardGroup);
+            rb.getStyleClass().add("body-text");
+            rb.setStyle("-fx-text-fill: #ffffff;");
+            radioContainer.getChildren().add(rb);
+        }
+        ((RadioButton)radioContainer.getChildren().get(0)).setSelected(true);
+
+        Button revealBtn = new Button("CONFIRM SELECTION");
+        revealBtn.getStyleClass().add("sleek-button");
+
+        revealBtn.setOnAction(e -> {
+            RadioButton selected = (RadioButton) cardGroup.getSelectedToggle();
+            String finalRevealedCardName = selected.getText();
+            showPassDeviceBackScreen(root, localSuggPlayer, finalRevealedCardName, stage);
+        });
+
+        box.getChildren().addAll(title, radioContainer, revealBtn);
+        root.getChildren().add(box);
+    }
+
+    private void showPassDeviceBackScreen(StackPane root, Player localSuggPlayer, String cardToShow, javafx.stage.Stage stage) {
+        root.getChildren().clear();
+        VBox box = new VBox(20);
+        box.setAlignment(Pos.CENTER);
+
+        Label instructions = new Label("PASS DEVICE BACK TO: " + localSuggPlayer.getPlayerName().toUpperCase());
+        instructions.getStyleClass().add("title-text");
+        instructions.setStyle("-fx-text-fill: #deb86b; -fx-font-size: 18px;");
+
+        Button viewCardBtn = new Button("I AM " + localSuggPlayer.getPlayerName().toUpperCase() + " (VIEW CARD)");
+        viewCardBtn.getStyleClass().add("secondary-button");
+
+        viewCardBtn.setOnAction(e -> showFinalCardReveal(root, cardToShow, stage));
+
+        box.getChildren().addAll(instructions, viewCardBtn);
+        root.getChildren().add(box);
+    }
+
+    private void showFinalCardReveal(StackPane root, String evidenceCard, javafx.stage.Stage stage) {
+        root.getChildren().clear();
+        VBox box = new VBox(20);
+        box.setAlignment(Pos.CENTER);
+
+        Label evidenceHeader = new Label("EVIDENCE DISCOVERED:");
+        evidenceHeader.getStyleClass().add("body-text");
+
+        Label cardDisplay = new Label("[ " + evidenceCard.toUpperCase() + " ]");
+        cardDisplay.getStyleClass().add("title-text");
+        cardDisplay.setStyle("-fx-font-size: 26px; -fx-text-fill: #ef5350; -fx-background-color: #1a233a; -fx-padding: 15 40 15 40;");
+
+        Button finalizeTurnBtn = new Button("HIDE EVIDENCE & END TURN");
+        finalizeTurnBtn.getStyleClass().add("sleek-button");
+
+        finalizeTurnBtn.setOnAction(e -> {
+            stage.close(); 
+            wrapUpTurn();  
+        });
+
+        box.getChildren().addAll(evidenceHeader, cardDisplay, finalizeTurnBtn);
+        root.getChildren().add(box);
+    }
+
+    private void wrapUpTurn() {
+        // FIXED loop logic: cycle turns dynamically until discovering a player who isn't eliminated
+        do {
+            gameManager.setNextTurn();
+        } while (gameManager.getCurrentTurn().isOut());
+
+        // Reset control dashboard buttons
+        if (startTurnBtn != null && rollDiceBtn != null && makeAccusationBtn != null) {
+            startTurnBtn.setDisable(false);
+            rollDiceBtn.setDisable(true);
+            makeAccusationBtn.setDisable(true);
+        }
+        
+        if (statusLabel != null) {
+            Player nextUp = gameManager.getCurrentTurn();
+            statusLabel.setText("Turn passed! Ready for " + nextUp.getPlayerName() + " (" + nextUp.getCharacterName() + "). Click 'START TURN'");
         }
     }
-    return false;
-}
 
-    // --- SMOOTH CROSS-SCREEN TRANSITION FADING HELPER ---
-    // --- CINEMATIC MIDNIGHT CROSS-SCREEN FADE ---
-private void fadeToNextScreen(javafx.scene.Node nextScreen) {
-    // Create a solid dark mask that sits over the entire screen layout
-    Pane fadeOverlay = new Pane();
-    fadeOverlay.setStyle("-fx-background-color: #0b1324;"); // Smooth deep navy/black fade color
-    fadeOverlay.setOpacity(0.0);
-    
-    // Add it to the top layer of our screen stack
-    rootContainer.getChildren().add(fadeOverlay);
-
-    // 1. Fade the dark overlay IN to hide the current view
-    FadeTransition fadeToDark = new FadeTransition(Duration.millis(300), fadeOverlay);
-    fadeToDark.setFromValue(0.0);
-    fadeToDark.setToValue(1.0);
-
-    fadeToDark.setOnFinished(event -> {
-        // 2. Once everything is completely dark, swap out the screens underneath safely
-        rootContainer.getChildren().clear();
-        rootContainer.getChildren().add(nextScreen);
+    private void fadeToNextScreen(javafx.scene.Node nextScreen) {
+        Pane fadeOverlay = new Pane();
+        fadeOverlay.setStyle("-fx-background-color: #0b1324;"); 
+        fadeOverlay.setOpacity(0.0);
         
-        // Re-add our cover to the top stack so we can fade it back out
         rootContainer.getChildren().add(fadeOverlay);
 
-        // 3. Fade the dark overlay OUT to elegantly reveal your new screen
-        FadeTransition revealNewScreen = new FadeTransition(Duration.millis(300), fadeOverlay);
-        revealNewScreen.setFromValue(1.0);
-        revealNewScreen.setToValue(0.0);
-        
-        // Clean up memory by removing the overlay entirely once the transition finishes
-        revealNewScreen.setOnFinished(e -> rootContainer.getChildren().remove(fadeOverlay));
-        revealNewScreen.play();
-    });
+        FadeTransition fadeToDark = new FadeTransition(Duration.millis(300), fadeOverlay);
+        fadeToDark.setFromValue(0.0);
+        fadeToDark.setToValue(1.0);
 
-    fadeToDark.play();
-}
+        fadeToDark.setOnFinished(event -> {
+            rootContainer.getChildren().clear();
+            rootContainer.getChildren().add(nextScreen);
+            rootContainer.getChildren().add(fadeOverlay);
+
+            FadeTransition revealNewScreen = new FadeTransition(Duration.millis(300), fadeOverlay);
+            revealNewScreen.setFromValue(1.0);
+            revealNewScreen.setToValue(0.0);
+            
+            revealNewScreen.setOnFinished(e -> rootContainer.getChildren().remove(fadeOverlay));
+            revealNewScreen.play();
+        });
+
+        fadeToDark.play();
+    }
+
+    private void launchPreGameHandPreview(Stage stage, GameManager activeManager, int playerIndex) {
+        ArrayList<Player> sessionPlayers = activeManager.getPlayers(); 
+
+        if (playerIndex >= sessionPlayers.size()) {
+            fadeToNextScreen(buildBoardScreen(stage, activeManager));
+            return;
+        }
+
+        Player currentPlayer = sessionPlayers.get(playerIndex);
+
+        VBox root = new VBox(25);
+        root.setAlignment(Pos.CENTER);
+        root.setStyle("-fx-background-color: #0b1324; -fx-padding: 40;");
+
+        // --- STATE 1: PASS DEVICE SCREEN ---
+        Label passLabel = new Label("PASS DEVICE TO: " + currentPlayer.getPlayerName().toUpperCase());
+        passLabel.setStyle("-fx-text-fill: #deb86b; -fx-font-size: 24px; -fx-font-weight: bold;");
+
+        Label secretLabel = new Label("(" + currentPlayer.getCharacterName() + "'s secret hand setup phase)");
+        secretLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-style: italic; -fx-font-size: 14px;");
+
+        Button confirmIdentityBtn = new Button("I AM " + currentPlayer.getPlayerName().toUpperCase() + " (VIEW HAND)");
+        confirmIdentityBtn.getStyleClass().add("sleek-button"); 
+
+        root.getChildren().addAll(passLabel, secretLabel, confirmIdentityBtn);
+
+        if (playerIndex == 0) {
+            fadeToNextScreen(root);
+        } else {
+            rootContainer.getChildren().clear();
+            rootContainer.getChildren().add(root);
+        }
+
+        // --- STATE 2: REVEAL HAND SCREEN ---
+        confirmIdentityBtn.setOnAction(e -> {
+            root.getChildren().clear(); 
+
+            Label handTitle = new Label(currentPlayer.getPlayerName() + "'s INITIAL CARD HAND");
+            handTitle.setStyle("-fx-text-fill: #deb86b; -fx-font-size: 22px; -fx-font-weight: bold;");
+            
+            Label instruction = new Label("Take note of your cards privately before continuing:");
+            instruction.setStyle("-fx-text-fill: #b5c2d6; -fx-font-size: 14px;");
+
+            HBox cardContainer = new HBox(15);
+            cardContainer.setAlignment(Pos.CENTER);
+            cardContainer.setPadding(new javafx.geometry.Insets(20, 0, 20, 0));
+
+            for (Card card : currentPlayer.getHand()) {
+                VBox cardVisual = new VBox(10);
+                cardVisual.setAlignment(Pos.CENTER);
+                cardVisual.setPrefSize(120, 180);
+                
+                cardVisual.setStyle("-fx-background-color: #1a233a; " +
+                                    "-fx-border-color: #deb86b; " +
+                                    "-fx-border-width: 2; " +
+                                    "-fx-border-radius: 8; " +
+                                    "-fx-background-radius: 8;");
+
+                Label cardName = new Label(card.getName().toUpperCase());
+                cardName.setWrapText(true);
+                cardName.setStyle("-fx-text-fill: #ffffff; -fx-font-weight: bold; -fx-font-size: 13px; -fx-text-alignment: center;");
+                
+                Label cardType = new Label("[" + card.getType().toUpperCase() + "]");
+                cardType.setStyle("-fx-text-fill: #859bb5; -fx-font-size: 11px;");
+
+                cardVisual.getChildren().addAll(cardName, cardType);
+                cardContainer.getChildren().add(cardVisual);
+            }
+
+            String nextButtonText = (playerIndex == sessionPlayers.size() - 1) 
+                ? "START GAME & ENTER MANOR" 
+                : "DONE (PASS TO NEXT PLAYER)";
+
+            Button nextPlayerBtn = new Button(nextButtonText);
+            nextPlayerBtn.getStyleClass().add("sleek-button");
+            
+            nextPlayerBtn.setOnAction(ev -> {
+                if (playerIndex == sessionPlayers.size() - 1) {
+                    fadeToNextScreen(buildBoardScreen(stage, activeManager));
+                } else {
+                    launchPreGameHandPreview(stage, activeManager, playerIndex + 1);
+                }
+            });
+
+            root.getChildren().addAll(handTitle, instruction, cardContainer, nextPlayerBtn);
+        });
+    }
 
     public static void main(String[] args) {
         launch(args);
