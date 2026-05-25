@@ -40,7 +40,7 @@ public class Board {
         initializeBoard();
     }
 
-    /* Initializes board layout, defining walkways, doorways, rooms, player spots within rooms, and secret passages. */
+    /** Initializes board layout, defining walkways, doorways, rooms, player spots within rooms, and secret passages. */
     public void initializeBoard() {
         for (int r = 0; r < board.length; r++) {
             for (int c = 0; c < board[0].length; c++) {
