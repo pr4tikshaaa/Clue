@@ -1,8 +1,18 @@
 import java.util.ArrayList;
 
+/**
+ * Represents game board for Clue.
+ * The game board creates and contains all tiles that make up walkways, doorways, secret passages, and rooms.
+ * It handles movement logic for players throughout all of these possible player positions.
+ */
 public class Board {
+    /** 2D Array for board. */
     private Tile[][] board;
+
+    /** ArrayList stores all possible player destination tiles based on player's starting position. */
     private ArrayList<Tile> validMoves;
+
+    /** Room objects to respresent the 9 different rooms within the board. */
     private Room kitchen;
     private Room ballroom;
     private Room conservatory;
@@ -14,6 +24,7 @@ public class Board {
     private Room library;
     private Room cellar;
 
+    /** Constructs a new Board object and initializes all rooms and tiles. */
     public Board() {
         board = new Tile[24][24];
         kitchen = new Room("Kitchen");
@@ -29,7 +40,7 @@ public class Board {
         initializeBoard();
     }
 
-
+    /* Initializes board layout, defining walkways, doorways, rooms, player spots within rooms, and secret passages. */
     public void initializeBoard() {
         for (int r = 0; r < board.length; r++) {
             for (int c = 0; c < board[0].length; c++) {
@@ -178,6 +189,7 @@ public class Board {
         conservatory.setSecretPassage(lounge);
     }
 
+    /** Prints instantaenous board state to the VS Code terminal (used for debugging). */
     public void printBoard() {
         for (int r = 0; r < board.length; r++) {
             for (int c = 0; c < board[0].length; c++) {
@@ -187,6 +199,13 @@ public class Board {
         }
     }
 
+    /**
+     * Stores all possible destinations tiles and rooms. Also adds secret passages to possible moves to take.
+     * 
+     * @param player (player involved in current turn)
+     * @param roll (result of current player's dice roll)
+     * @return (returns ArrayList of all possible destination positions)
+     */
     public ArrayList<Tile> getValidMoves(Player player, int roll) {
         validMoves = new ArrayList<>();
         boolean[][] visited = new boolean[board.length][board[0].length];
@@ -205,6 +224,14 @@ public class Board {
         return validMoves;
     }
     
+    /**
+     * Recursive algorithm to find all vallid walkway and room destinations. Adds these locations to the ArrayList validMoves.
+     * 
+     * @param row (row of player's current position)
+     * @param col (col of player's current position)
+     * @param stepsLeft (initialized to player's dice roll, decrements as steps are taken to find possible movement paths)
+     * @param visited (2D Array that tracks if the player has visited a tile during recursion)
+     */
     private void findMoves(int row, int col, int stepsLeft, boolean[][] visited) {
         if (!isValidLocation(row, col)) {
             return;
@@ -264,10 +291,26 @@ public class Board {
         visited[row][col] = false;
     }
 
+    /**
+     * Gets name of the room the player is in (used for debugging).
+     * 
+     * @param player (player to check)
+     * @return (String of the room name the player is currently in)
+     */
     public String getRoom(Player player) {
         return board[player.getRow()][player.getCol()].getName();
     }
 
+    /**
+     * Moves player to specified board position.
+     * Gets row and col inputs from UI decisions.
+     * If tile is occupied, player cannot be set there.
+     * If destination is room, places player into an available designated player spot.
+     * 
+     * @param player (player to move)
+     * @param r (row to move player to)
+     * @param c (col to move player to)
+     */
     public void setPlayer(Player player, int r, int c) {
         if (!isValidLocation(r, c)) {
             return;
@@ -298,6 +341,13 @@ public class Board {
         board[r][c].setOccupied(true);
     }
 
+    /**
+     * Checks if tile is within bounds of board.
+     * 
+     * @param r (row of tile to check)
+     * @param c (col of tile to check)
+     * @return (true if within bounds, false if not)
+     */
     public boolean isValidLocation(int r, int c) {
         if ((r >= 0 && r < board.length) && (c >= 0 && c < board[0].length)) {
             return true;
@@ -306,10 +356,24 @@ public class Board {
         }
     }
 
+    /**
+     * Gets specified tile.
+     * 
+     * @param r (row of tile)
+     * @param c (col of tile)
+     * @return (returns specified Tile)
+     */
     public Tile getTile(int r, int c) {
         return board[r][c];
     }
 
+    /**
+     * Gets neighboring tiles given current tile.
+     * If the current tile is a room, then its neighbors are its doorways.
+     * 
+     * @param current (current tile)
+     * @return (returns an ArrayList of neighboring tiles)
+     */
     public ArrayList<Tile> getNeighbors(Tile current) {
         ArrayList<Tile> neighbors = new ArrayList<>();
         int row = current.getRow();
@@ -325,8 +389,16 @@ public class Board {
         checkAndAddNeighbor(current, neighbors, row, col - 1);
         
         return neighbors;
-}
+    }
 
+    /**
+     * Checks if neighboring tile is valid and adds it to list that stores neighbors.
+     * 
+     * @param current (tile to check neighbors of)
+     * @param neighbors (list of valid neighboring tiles)
+     * @param r (row of neighbor row)
+     * @param c (col of neighbor col)
+     */
     private void checkAndAddNeighbor(Tile current, ArrayList<Tile> neighbors, int r, int c) {
         if (!isValidLocation(r, c)) return;
 

@@ -2,14 +2,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
 
+/**
+ * Represents deck of cards made up of Card objects.
+ * Deck contains suspect, weapon, and room cards.
+ * Creates case file, shuffles cards, and deals cards to players.
+ * 
+ */
 public class CardDeck {
+    /** Stack contains all the cards in the deck. */
     private Stack<Card> cardDeck;
+    /** Ordered ArrayList of all cards before shuffling.  */
     private ArrayList<Card> orderedDeck;
+    /** Holds casefile containing the three solution cards. */
     private CaseFile caseFile;
-/*  private ArrayList<Card> suspectCards;
-    private ArrayList<Card> weaponCards;
-    private ArrayList<Card> roomCards; */
 
+    /**
+     * Constructs a CardDeck and initializes all Clue cards.
+     * 
+     * The deck is initialized, shuffled, and then a case file is created.
+     */
     public CardDeck() {
         cardDeck = new Stack<>();
         orderedDeck = new ArrayList<>();
@@ -47,12 +58,21 @@ public class CardDeck {
         createCaseFile();
     }
 
+    /**
+     * Adds all cards from ordered deck to the card deck that will be used for the game.
+     */
     public void initializeDeck() {
         for (Card c : orderedDeck) {
             cardDeck.push(c);
         }
     }
 
+    /**
+     * Gets card given the name of it.
+     * 
+     * @param name (name of the card)
+     * @return (return the Card object, or null if not found)
+     */
     public Card getCard(String name) {
         for (int i = 0; i < orderedDeck.size(); i++) {
             if (name.equals(orderedDeck.get(i).getName())) {
@@ -62,10 +82,17 @@ public class CardDeck {
         return null;
     }
 
+    /**
+     * Randomly shuffles the card deck.
+     */
     public void shuffle() {
         Collections.shuffle(cardDeck);
     }
 
+    /**
+     * Creates the hidden case file for the game. Removes one suspect, one weapon, and one room from the deck
+     * and adds it to the case file. The selection process makes sure that the cards chosen are random.
+     */
     public void createCaseFile() {
         Card suspect = null;
         Card weapon = null;
@@ -118,6 +145,11 @@ public class CardDeck {
         caseFile = new CaseFile(suspect, weapon, room);
     }
 
+    /**
+     * Deals cards to players and adds it to their respective player card hands.
+     * 
+     * @param players (players involved in game)
+     */
     public void dealCards(ArrayList<Player> players) {
         int i = 0;
 
@@ -127,6 +159,11 @@ public class CardDeck {
         }
     }
 
+    /**
+     * Returns case file for the game
+     * 
+     * @return (returns caseFile object)
+     */
     public CaseFile getCaseFile() {
         return caseFile;
     }

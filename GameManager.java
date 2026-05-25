@@ -1,13 +1,28 @@
 import java.util.ArrayList;
 
+/**
+ * Manages overall clue game logic.
+ * Controls player turns, player movement, rolling dice, making suggestions, making accusations, and certain card management.
+ */
 public class GameManager {
+    /** ArrayList represents all Players involved in game. */
     private ArrayList<Player> players;
+    /** Card deck to be used in game. */
     private CardDeck cardDeck;
+    /** Keeps track of whose turn it is throughout the game (index by 0). */
     private int currentPlayerIndex;
-    private int steps;
+    /** Board to be used in game. */
     private Board board;
+    /** List of possible moves given a starting location and the number of steps. */
     private ArrayList<Tile> moves;
 
+    /**
+     * Constucts a GameManager object and initializes the game state.
+     * 
+     * Cards are dealt to players, and players are placed at their starting positions on the board.
+     * 
+     * @param players (players involved in game)
+     */
     public GameManager(ArrayList<Player> players) {
         this.players = players;
         cardDeck = new CardDeck();
@@ -25,25 +40,49 @@ public class GameManager {
         board.printBoard();
     }
 
+    /**
+     * Gets the player whose turn it currently is.
+     * 
+     * @return (return current player)
+     */
     public Player getCurrentTurn() {
         currentPlayerIndex = currentPlayerIndex % players.size();
-        //System.out.println("Player " + (currentPlayerIndex + 1) + "'s turn");
         return players.get(currentPlayerIndex);
     }
 
+    /**
+     * Sets following turn to the next player.
+     * 
+     * @return (return next player)
+     */
     public Player setNextTurn() {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
         return players.get(currentPlayerIndex);
     }
 
+    /**
+     * Get index of current player.
+     * 
+     * @return (int of current player index)
+     */
     public int getCurrentPlayerIndex() {
         return currentPlayerIndex;
     }
 
+    /**
+     * Gets index of next player's turn.
+     * 
+     * @return (the next player index)
+     */
     public int getNextTurn() {
         return (currentPlayerIndex + 1) % players.size();
     }
 
+    /**
+     * Gets the case file of the game.
+     * 
+     * @return (return CaseFile object)
+     */
     public CaseFile getCaseFile() {
         return cardDeck.getCaseFile();
     }
@@ -104,11 +143,6 @@ public class GameManager {
         player.setRoll(roll);
     }
 
-    // public void movePlayer(int steps) {
-    //     Player player = getCurrentTurn();
-    //     player.setPosition(player.getPosition() + steps);
-    // }
-
     public void setPlayerPos(int r, int c) {
         Player player = getCurrentTurn();
         board.setPlayer(player, r, c);
@@ -118,20 +152,10 @@ public class GameManager {
         Player current = getCurrentTurn();
         System.out.println("\nPlayer " + (currentPlayerIndex + 1) + " (" + current.getCharacterName() + ")'s turn:");
         rollDice();
-
-        // temp movement test
-        // board.setPlayer(current, current.getRow(), current.getRow());
-        // movePlayer(steps);
-        // current.setRoom();
     }
 
     public void playerMoves() {
         Player current = getCurrentTurn();
-        //System.out.println("\nPlayer " + (currentPlayerIndex + 1) + "'s turn");
-        
-        // TEMP TEST POSITION
-        // board.setPlayer(current, current.getRow(), current.getCol());
-        //takeTurn();
 
         Tile t = board.getTile(current.getRow(), current.getCol());
 
@@ -149,16 +173,12 @@ public class GameManager {
             System.out.println(tile.getRow() + ", " + tile.getCol());
         }
 
-        Tile chosen = moves.get(0); // TEMP: auto-pick first move
+        Tile chosen = moves.get(0); // TEMP: auto-pick first move // used for debugging, only affects text-based game
         board.setPlayer(current, chosen.getRow(), chosen.getCol());
     }
 
     public Board getBoard() {
         return board;
-    }
-
-    public int getSteps() {
-        return steps;
     }
 
     public Player findDisprovingPlayer(String suspect, String weapon, String room) {

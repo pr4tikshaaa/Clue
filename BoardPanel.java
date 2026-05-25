@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class BoardPanel extends JPanel {
     private Board gameBoard;

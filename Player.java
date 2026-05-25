@@ -1,20 +1,51 @@
 import java.util.ArrayList;
 
+/**
+ * 
+ */
 public class Player {    
+    /**
+     * 
+     */
     private String playerName;
+    /**
+     * 
+     */
     private String characterName;
+    /**
+     * 
+     */
     private ArrayList<Card> hand;
-    // private int position;
-    // private String currentRoom;
+    /**
+     * 
+     */
     private int row;
+    /**
+     * 
+     */
     private int col;
+    /**
+     * 
+     */
     private Location location;
+    /**
+     * 
+     */
     private Room currentRoom;
+    /**
+     * 
+     */
     private int roll;
+    /**
+     * 
+     */
     private boolean isOut;
-    // private int roomCount;
-    // private GameManager game;
     
+    /**
+     * 
+     * @param playerName
+     * @param characterName
+     */
     public Player(String playerName, String characterName) {
         this.playerName = playerName;
         this.characterName = characterName;
@@ -25,30 +56,60 @@ public class Player {
         isOut = false;
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getPlayerName() {
         return playerName;
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getCharacterName() {
         return characterName;
     }
 
+    /**
+     * 
+     * @param name
+     */
     public void setCharacterName(String name) {
         characterName = name;
     }
 
+    /**
+     * 
+     * @return
+     */
     public ArrayList<Card> getHand() {
         return hand;
     }
 
+    /**
+     * 
+     * @param i
+     * @return
+     */
     public Card getCard(int i) {
         return hand.get(i);
     }
 
+    /**
+     * 
+     * @param card
+     */
     public void addCard(Card card) {
         hand.add(card);
     }
 
+    /**
+     * 
+     * @param c
+     * @return
+     */
     public boolean hasCard(Card c) {
         for (Card card : hand) {
             if (c.equals(card)) {
@@ -58,88 +119,85 @@ public class Player {
         return false;
     }
 
-    // public int getPosition() {
-    //     return position;
-    // }
-
+    /**
+     * 
+     * @param r
+     * @param c
+     */
     public void setPosition(int r, int c) {
         this.row = r;
         this.col = c;
     }
 
+    /**
+     * 
+     * @param location
+     */
     public void setLocation(Location location) {
         this.location = location;
     }
 
+    /**
+     * 
+     * @return
+     */
     public Location getLocation() {
         return location;
     }
 
+    /**
+     * 
+     * @return
+     */
     public Room getCurrentRoom() {
         return currentRoom;
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getRow() {
         return row;
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getCol() {
         return col;
     }
 
+    /**
+     * 
+     * @param r
+     */
     public void setRoll(int r) {
         roll = r;
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getRoll() {
         return roll;
     }
 
-    // Inside Player.java:
-    
+    /**
+     * 
+     * @return
+     */
     public boolean isOut() {
         return isOut;
     }
     
+    /**
+     * 
+     * @param out
+     */
     public void setOut(boolean out) { 
         this.isOut = out;
     }
-
-    // public boolean isInRoom() {
-    //     if (currentRoom != null) {
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // }
-
-
-/*     public String setRoom() {
-        roomCount++;
-        if (roomCount == 1) {
-            this.currentRoom = "Ballroom";
-        } else if (roomCount == 2) {
-            this.currentRoom = "Billiard Room";
-        } else if (roomCount == 3) {
-            this.currentRoom = "Conservatory";
-        } else if (roomCount == 4) {
-            this.currentRoom = "Dining Room";
-        } else if (roomCount == 5) {
-            this.currentRoom = "Hall";
-        } else if (roomCount == 6) {
-            this.currentRoom = "Kitchen";
-        } else if (roomCount == 7) {
-            this.currentRoom = "Library";
-        } else if (roomCount == 8) {
-            this.currentRoom = "Lounge";
-        } else if (roomCount == 9) {
-            this.currentRoom = "Study";
-        }
-
-        return this.currentRoom;
-    }
-
-    public int getRoomCount() {
-        return roomCount;
-    } */
 }
