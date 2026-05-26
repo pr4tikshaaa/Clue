@@ -80,7 +80,7 @@ public class FXBoardPanel extends Pane {
             case "Mrs. Peacock":    return Color.web("#1e88e5"); // Royal Blue
             case "Mr. Green":       return Color.web("#43a047"); // Emerald Forest Green
             case "Prof. Plum":      return Color.web("#8e24aa"); // Classic Purple
-            case "Dr. Orchid":      return Color.web("#ffb74d"); // Coral Orange / Pinkish White
+            case "Dr. Orchid":      return Color.web("#ff4dbb"); // Coral Orange / Pinkish White
             default:                return Color.web("#deb86b"); // Fallback Gold Accent
         }
     }
@@ -182,7 +182,7 @@ public class FXBoardPanel extends Pane {
             }
         }
 
-        // --- PASS 3: RENDER INTERACTIVE HOVER EFFECTS LAYER ---
+        // --- PASS 3: RENDER INTERACTIVE HOVER EFFECTS LAYER --- #deb86b, made color more clear
         if (hoveredTile != null) {
             Tile validTarget = getCorrespondingValidMove(hoveredTile);
 
@@ -193,12 +193,12 @@ public class FXBoardPanel extends Pane {
                     
                     gc.setFill(Color.rgb(222, 184, 107, 0.45));
                     gc.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-                    gc.setStroke(Color.web("#deb86b"));
+                    gc.setStroke(Color.web("#4b56bb"));
                     gc.setLineWidth(1.5);
                     gc.strokeRect(x + 0.5, y + 0.5, TILE_SIZE - 1, TILE_SIZE - 1);
                 } 
                 else if (hoveredTile.getConnectedRoom() != null) {
-                    gc.setStroke(Color.web("#deb86b")); 
+                    gc.setStroke(Color.web("#4b56bb")); 
                     gc.setLineWidth(3.5);              
 
                     for (int r = 0; r < 24; r++) {

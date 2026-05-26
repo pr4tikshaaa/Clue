@@ -35,7 +35,7 @@ public class GameManager {
         if (players.size() > 2) board.setPlayer(players.get(2), 17, 0);
         if (players.size() > 3) board.setPlayer(players.get(3), 0, 16);
         if (players.size() > 4) board.setPlayer(players.get(4), 7, 23);
-        if (players.size() > 5) board.setPlayer(players.get(5), 18, 23);
+        if (players.size() > 5) board.setPlayer(players.get(5), 16, 23); //at row 18, it was in a room, had to change to 16
 
         board.printBoard();
     }

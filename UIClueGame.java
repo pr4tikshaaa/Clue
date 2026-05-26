@@ -63,28 +63,32 @@ public class UIClueGame extends Application {
         homeLayout.setAlignment(Pos.CENTER);
 
         StackPane logoContainer = new StackPane();
-        try {
-            File logoFile = new File("clue_cover.jpg"); 
-            //using the image (finds if image exists), it will show the image
-            if (logoFile.exists()) {
-                Image logoImg = new Image(logoFile.toURI().toString());
-                ImageView logoView = new ImageView(logoImg);
-                logoView.setPreserveRatio(true);
-                logoView.setFitWidth(650);   
-                logoView.setFitHeight(200);  
-                logoContainer.getChildren().add(logoView);
-            }
-            //if the image does not exist, then just have plain text with CLUE 
-            else {
-                Label fallbackLabel = new Label("CLUE");
+        Label fallbackLabel = new Label("CLUE");
                 fallbackLabel.getStyleClass().add("title-text");
                 fallbackLabel.setStyle("-fx-font-size: 54px;");
                 logoContainer.getChildren().add(fallbackLabel);
-            }
-        } 
-        catch (Exception e) {
-            System.out.println("Could not load custom logo graphic.");
-        }
+        // try {
+        //     File logoFile = new File("clue_cover.jpg"); 
+        //     //using the image (finds if image exists), it will show the image
+        //     if (logoFile.exists()) {
+        //         Image logoImg = new Image(logoFile.toURI().toString());
+        //         ImageView logoView = new ImageView(logoImg);
+        //         logoView.setPreserveRatio(true);
+        //         logoView.setFitWidth(650);   
+        //         logoView.setFitHeight(200);  
+        //         logoContainer.getChildren().add(logoView);
+        //     }
+        //     //if the image does not exist, then just have plain text with CLUE 
+        //     else {
+        //         Label fallbackLabel = new Label("CLUE");
+        //         fallbackLabel.getStyleClass().add("title-text");
+        //         fallbackLabel.setStyle("-fx-font-size: 54px;");
+        //         logoContainer.getChildren().add(fallbackLabel);
+        //     }
+        // } 
+        // catch (Exception e) {
+        //     System.out.println("Could not load custom logo graphic.");
+        // }
         //Stylistic, AI generated
         logoContainer.setOpacity(0.0);
         logoContainer.setTranslateY(40); 
