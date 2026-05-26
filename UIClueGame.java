@@ -16,8 +16,8 @@ import java.util.ArrayList;
 
 public class UIClueGame extends Application {
     private StackPane rootContainer; // Swaps views inside this master container
-    private ArrayList<Player> players = new ArrayList<>();
-    private int numPlayers;
+    private ArrayList<Player> players = new ArrayList<>(); //holds list of players playing
+    private int numPlayers; //number of players playing
     private final String[] suspectsList = {" ", "Col. Mustard", "Miss Scarlet", "Prof. Plum", "Mr. Green", "Mrs. Peacock", "Dr. Orchid"};
     private final String[] roomsList = {"Kitchen", "Ballroom", "Conservatory", "Dining Room", "Billiard Room", "Library", "Lounge", "Hall", "Study"};
 
@@ -30,12 +30,16 @@ public class UIClueGame extends Application {
     private Button makeAccusationBtn; // Added permanent tracking reference
 
     @Override
+    /**
+     * Creates and launches the main window
+     * @param primaryStage (the main, blank window to be created automatically when starts)
+     */
     public void start(Stage primaryStage) {
         rootContainer = new StackPane();
         rootContainer.getStyleClass().add("root-container");
 
         Scene scene = new Scene(rootContainer, 800, 740);
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm()); //attaching style sheet to control how it looks
 
         // Initialize and show the Home Screen instantly
         rootContainer.getChildren().add(buildHomeScreen());
@@ -46,6 +50,14 @@ public class UIClueGame extends Application {
         primaryStage.show();
     }
 
+    /**
+     * VBox = Vertical Box
+     *  used to layer items in a vertical layout
+     * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
+     *      others are specified
+     *  
+     * @return a VBox containing layout of the home screen
+     */
     private VBox buildHomeScreen() {
         VBox homeLayout = new VBox(20);
         homeLayout.setAlignment(Pos.CENTER);
@@ -53,6 +65,7 @@ public class UIClueGame extends Application {
         StackPane logoContainer = new StackPane();
         try {
             File logoFile = new File("clue_cover.jpg"); 
+            //using the image (finds if image exists), it will show the image
             if (logoFile.exists()) {
                 Image logoImg = new Image(logoFile.toURI().toString());
                 ImageView logoView = new ImageView(logoImg);
@@ -60,33 +73,37 @@ public class UIClueGame extends Application {
                 logoView.setFitWidth(650);   
                 logoView.setFitHeight(200);  
                 logoContainer.getChildren().add(logoView);
-            } else {
-                Label fallbackLabel = new Label("[ LOGO PLACEHOLDER ]");
+            }
+            //if the image does not exist, then just have plain text with CLUE 
+            else {
+                Label fallbackLabel = new Label("CLUE");
                 fallbackLabel.getStyleClass().add("title-text");
                 fallbackLabel.setStyle("-fx-font-size: 54px;");
                 logoContainer.getChildren().add(fallbackLabel);
             }
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             System.out.println("Could not load custom logo graphic.");
         }
-        
+        //Stylistic, AI generated
         logoContainer.setOpacity(0.0);
         logoContainer.setTranslateY(40); 
-        
+        //Stylistic, AI generated
         FadeTransition fadeInLogo = new FadeTransition(Duration.millis(1200), logoContainer);
         fadeInLogo.setFromValue(0.0); 
         fadeInLogo.setToValue(1.0);
-        
+        //Stylistic, AI generated
         TranslateTransition riseUpLogo = new TranslateTransition(Duration.millis(1200), logoContainer);
         riseUpLogo.setFromY(40); 
         riseUpLogo.setToY(0); 
-        
+        //Stylistic, AI generated
         ParallelTransition introAnim = new ParallelTransition(fadeInLogo, riseUpLogo);
         introAnim.setDelay(Duration.millis(300));
         introAnim.play();
-
+    
         Button startBtn = new Button("START");
         startBtn.getStyleClass().add("sleek-button");
+        //Start button changes screen to the num players screen
         startBtn.setOnAction(e -> fadeToNextScreen(buildPlayerCountScreen()));
 
         homeLayout.setPadding(new Insets(20)); 
@@ -94,6 +111,13 @@ public class UIClueGame extends Application {
         return homeLayout;
     }
 
+    /**
+     * Method to choose how many players are playing
+     * the field numPlayers changes to the value sotred by the dropdown comboPlayers
+     * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
+     * 
+     * @return a VBox containing layout of number of players screen
+     */
     private VBox buildPlayerCountScreen() {
         VBox cardContainer = new VBox(25);
         cardContainer.getStyleClass().add("setup-card");
@@ -106,24 +130,34 @@ public class UIClueGame extends Application {
 
         ComboBox<String> comboPlayers = new ComboBox<>();
         comboPlayers.getItems().addAll("3", "4", "5", "6");
-        comboPlayers.setValue("3");
+        comboPlayers.setValue("3"); //sets default to 3 players
         comboPlayers.getStyleClass().add("combo-box");
 
         Button nextBtn = new Button("CHOOSE CHARACTERS →");
         nextBtn.getStyleClass().add("secondary-button");
         nextBtn.setOnAction(e -> {
-            this.numPlayers = Integer.parseInt(comboPlayers.getValue());
-            fadeToNextScreen(buildCharacterAssignmentScreen(this.numPlayers));
+            this.numPlayers = Integer.parseInt(comboPlayers.getValue()); //setting the field numPlayers
+            fadeToNextScreen(chooseCharactersScreen(this.numPlayers)); //switch to next screen
         });
 
         cardContainer.getChildren().addAll(title, comboPlayers, nextBtn);
         
-        VBox screenWrapper = new VBox(cardContainer);
-        screenWrapper.setAlignment(Pos.CENTER);
-        return screenWrapper;
+        // VBox screenWrapper = new VBox(cardContainer);
+        // screenWrapper.setAlignment(Pos.CENTER);
+        return cardContainer;
     }
 
-    private VBox buildCharacterAssignmentScreen(int totalPlayers) {
+    /**
+     * Creating a new player based on totalPlayers, and adding to field players
+     * HBox = Horizontal Box
+     *  layers items horizontally
+     * Uses helper method checkCharacters to make sure same characters are not chosen
+     * NOTE: There are some stylistic elements in this method that were AI generated (setting font/background color, size)
+     * 
+     * @param totalPlayers the number of players chosen
+     * @return a VBox containing layout for choosing character
+     */
+    private VBox chooseCharactersScreen(int totalPlayers) {
         players.clear();
         VBox cardContainer = new VBox(15);
         cardContainer.getStyleClass().add("setup-card");
@@ -136,8 +170,9 @@ public class UIClueGame extends Application {
         cardContainer.getChildren().add(title);
 
         ArrayList<ComboBox<String>> menuSelectors = new ArrayList<>();
-
-        for (int i = 1; i <= totalPlayers; i++) {
+        //Creating a new player based on totalPlayers
+        for (int i = 1; i <= totalPlayers; i++) 
+        {
             int tempIndex = i;
             players.add(new Player("Player " + tempIndex, " "));
 
@@ -162,9 +197,9 @@ public class UIClueGame extends Application {
             cardContainer.getChildren().add(row);
         }
 
-        Label errorLabel = new Label("❌ Please assign unique suspect identity files.");
+        Label errorLabel = new Label("Please assign unique suspect identity files.");
         errorLabel.getStyleClass().add("body-text");
-        errorLabel.setStyle("-fx-text-fill: #ef5350; -fx-font-size: 13px;");
+        errorLabel.setStyle("-fx-text-fill: #ef5350; -fx-font-size: 13px;"); //Stylistic, AI generated
         errorLabel.setVisible(false);
 
         Button startBtn = new Button("ENTER MANSION →");
@@ -178,7 +213,7 @@ public class UIClueGame extends Application {
                 gameManager = new GameManager(this.players);
 
                 // Run hand previews using the managed session instance
-                launchPreGameHandPreview(primaryWindow, gameManager, 0);
+                passAndPlayPhase(primaryWindow, gameManager, 0);
             } else {
                 errorLabel.setVisible(true);
             }
@@ -191,6 +226,13 @@ public class UIClueGame extends Application {
         return screenWrapper;
     }
 
+    /**
+     * HELPER METHOD
+     * checks to make sure the characters chosen are different
+     * 
+     * @param players ArrayList of players to compare the players chosen
+     * @return true if players are different, false if not
+     */
     private boolean checkCharacters(ArrayList<Player> players) {
         ArrayList<String> names = new ArrayList<>();
         for (Player p : players) {
@@ -203,8 +245,21 @@ public class UIClueGame extends Application {
         return true;
     }
 
+    /**
+     * Builds the Clue board
+     * contains the buttons needed for the game
+     *      start turn, roll dice, make accusation
+     * Shows basic info
+     *      like current player, dice number rolled
+     * NOTE: There are some stylistic elements in this method that were AI generated (setting font/background color, size)
+     * 
+     * @param stage passes the main application window to this method
+     * @param manager a GameManager (manages the overall clue game logic)
+     * @return a BorderPane containing main game layout, with a menu (at the top, with buttons)
+     *      and the game at the center
+     */
     private BorderPane buildBoardScreen(Stage stage, GameManager manager) {
-        this.gameManager = manager;
+        this.gameManager = manager; //setting the field gameManager to the parameter
         BorderPane boardLayout = new BorderPane();
         
         visualBoard = new FXBoardPanel(gameManager.getBoard(), this.players); 
@@ -214,6 +269,7 @@ public class UIClueGame extends Application {
         statusLabel.getStyleClass().add("body-text");
         statusLabel.setStyle("-fx-text-fill: #deb86b; -fx-padding: 0 0 0 20;");
 
+        // Stylistic element, AI generated
         HBox topActionBar = new HBox(20);
         topActionBar.setPadding(new Insets(15));
         topActionBar.setAlignment(Pos.CENTER_LEFT);
@@ -222,12 +278,12 @@ public class UIClueGame extends Application {
         startTurnBtn = new Button("START TURN");
         startTurnBtn.getStyleClass().add("secondary-button");
         
-        rollDiceBtn = new Button("ROLL DICE 🎲");
+        rollDiceBtn = new Button("ROLL DICE");
         rollDiceBtn.getStyleClass().add("sleek-button");
         rollDiceBtn.setDisable(true); 
 
         // FIXED: Added permanent accusation trigger button layout
-        makeAccusationBtn = new Button("MAKE ACCUSATION ⚖️");
+        makeAccusationBtn = new Button("MAKE ACCUSATION");
         makeAccusationBtn.setStyle("-fx-background-color: #a62b2b; -fx-text-fill: white; -fx-font-weight: bold;");
         makeAccusationBtn.setDisable(true);
 
@@ -267,7 +323,8 @@ public class UIClueGame extends Application {
 
         makeAccusationBtn.setOnAction(e -> launchAccusationFlow(gameManager.getCurrentTurn()));
 
-        // Use a Spacer object to push the accusation trigger to the far right edge cleanly
+        // Use a Spacer object to push the accusation trigger to the far right edge cleanly 
+        // stylistic element, AI generated
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
@@ -277,6 +334,13 @@ public class UIClueGame extends Application {
         return boardLayout;
     }
 
+    /**
+     * Start teh "Accusation" part
+     *      checking to see if their accusation is correct, if not then take the actions needed
+     * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
+     * 
+     * @param accusingPlayer the player that wants to guess
+     */
     private void launchAccusationFlow(Player accusingPlayer) {
         javafx.stage.Stage dialog = new javafx.stage.Stage();
         dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL);
@@ -298,7 +362,7 @@ public class UIClueGame extends Application {
         title.getStyleClass().add("title-text");
         title.setStyle("-fx-text-fill: #ef5350; -fx-font-size: 18px;");
 
-        Label warning = new Label("⚠️ If wrong, you are eliminated from taking turns!");
+        Label warning = new Label("WARNING: If wrong, you are eliminated from taking turns!");
         warning.setStyle("-fx-text-fill: #b5c2d6; -fx-font-style: italic; -fx-font-size: 12px;");
 
         ComboBox<String> suspectCombo = new ComboBox<>();
@@ -307,7 +371,7 @@ public class UIClueGame extends Application {
         suspectCombo.getStyleClass().add("combo-box");
 
         ComboBox<String> weaponCombo = new ComboBox<>();
-        weaponCombo.getItems().addAll("Candlestick", "Knife", "Lead Pipe", "Revolver", "Rope", "Wrench");
+        weaponCombo.getItems().addAll("Candlestick", "Dagger", "Lead Pipe", "Revolver", "Rope", "Wrench");
         weaponCombo.setValue("Candlestick");
         weaponCombo.getStyleClass().add("combo-box");
 
@@ -319,13 +383,8 @@ public class UIClueGame extends Application {
         Button submitBtn = new Button("SUBMIT FINAL ACCUSATION");
         submitBtn.setStyle("-fx-background-color: #a62b2b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20;");
 
-        layout.getChildren().addAll(
-            title, warning, 
-            new Label("Suspect Case File:"), suspectCombo, 
-            new Label("Murder Weapon Asset:"), weaponCombo, 
-            new Label("Crime Scene Location:"), roomCombo,
-            submitBtn
-        );
+        layout.getChildren().addAll( title, warning, new Label("Suspect Case File:"), suspectCombo, new Label("Murder Weapon Asset:"), 
+            weaponCombo, new Label("Crime Scene Location:"), roomCombo, submitBtn);
         modalRoot.getChildren().add(layout);
 
         submitBtn.setOnAction(e -> {
@@ -341,7 +400,7 @@ public class UIClueGame extends Application {
             resultsBox.setAlignment(Pos.CENTER);
 
             if (isCorrect) {
-                Label winLabel = new Label("🎉 CORRECT! " + accusingPlayer.getPlayerName().toUpperCase() + " SOLVED THE CRIME!");
+                Label winLabel = new Label("CORRECT! " + accusingPlayer.getPlayerName().toUpperCase() + " SOLVED THE CRIME!");
                 winLabel.setStyle("-fx-text-fill: #66bb6a; -fx-font-size: 20px; -fx-font-weight: bold;");
                 
                 Label detailLabel = new Label("It was indeed " + suspect + " in the " + room + " with the " + weapon + ".");
@@ -354,7 +413,7 @@ public class UIClueGame extends Application {
                 });
                 resultsBox.getChildren().addAll(winLabel, detailLabel, exitBtn);
             } else {
-                Label loseLabel = new Label("❌ INCORRECT ACCUSATION!");
+                Label loseLabel = new Label("INCORRECT ACCUSATION!");
                 loseLabel.setStyle("-fx-text-fill: #ef5350; -fx-font-size: 20px; -fx-font-weight: bold;");
 
                 Label penaltyLabel = new Label(accusingPlayer.getPlayerName() + " is out of the game, but must still reveal cards to disprove suggestions.");
@@ -376,12 +435,23 @@ public class UIClueGame extends Application {
             modalRoot.getChildren().add(resultsBox);
         });
 
-        dialog.showAndWait();
+        dialog.showAndWait(); //opens your pop-up window and completely pauses the execution of the surrounding Java code until the user closes that pop-up
     }
 
+    /**
+     * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
+     * The method that starts the suggestion flow
+     * creates this in a new empty window, seperate from the main board
+     * Uses the method from GameManager, findDisprovingPlayer, which finds first player who can disprove a suggestion
+     *      and getDisprovingCards, which gets all cards the disproving player is able to disprove suggestion with
+     * Uses wrapUpTurn();, helper method
+     * 
+     * @param suggestingPlayer the player who is suggesting
+     * @param room the room they are in
+     */
     private void launchSuggestionFlow(Player suggestingPlayer, Room room) {
-        javafx.stage.Stage dialog = new javafx.stage.Stage();
-        dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+        javafx.stage.Stage dialog = new javafx.stage.Stage(); //creats a new empty window (seperate from main one)
+        dialog.initModality(javafx.stage.Modality.APPLICATION_MODAL); //until user closes this, the main board can't do anything
         dialog.setTitle("ROOM ARRIVAL: MAKE A SUGGESTION");
         dialog.setResizable(false);
 
@@ -389,7 +459,7 @@ public class UIClueGame extends Application {
         modalRoot.setStyle("-fx-background-color: #0b1324; -fx-padding: 30;");
         modalRoot.setPrefSize(450, 400);
         
-        Scene dialogScene = new Scene(modalRoot);
+        Scene dialogScene = new Scene(modalRoot);//container holds modalRoot
         dialogScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         dialog.setScene(dialogScene);
 
@@ -400,13 +470,14 @@ public class UIClueGame extends Application {
         title1.getStyleClass().add("title-text");
         title1.setStyle("-fx-text-fill: #deb86b; -fx-font-size: 16px;");
 
+        //Using field suspectsList
         ComboBox<String> suspectCombo = new ComboBox<>();
         for (String s : suspectsList) { if(!s.trim().isEmpty()) suspectCombo.getItems().add(s); }
         suspectCombo.setValue(suspectCombo.getItems().get(0));
         suspectCombo.getStyleClass().add("combo-box");
 
         ComboBox<String> weaponCombo = new ComboBox<>();
-        weaponCombo.getItems().addAll("Candlestick", "Knife", "Lead Pipe", "Revolver", "Rope", "Wrench");
+        weaponCombo.getItems().addAll("Candlestick", "Dagger", "Lead Pipe", "Revolver", "Rope", "Wrench");
         weaponCombo.setValue("Candlestick");
         weaponCombo.getStyleClass().add("combo-box");
 
@@ -421,6 +492,7 @@ public class UIClueGame extends Application {
             String chosenWeapon = weaponCombo.getValue();
             String chosenRoom = room.getName();
 
+            //findDisprovingPlayer: Finds first player who can disprove a suggestion.
             Player disprovingPlayer = gameManager.findDisprovingPlayer(chosenSuspect, chosenWeapon, chosenRoom); 
             ArrayList<String> matchingCards = gameManager.getDisprovingCards(disprovingPlayer, chosenSuspect, chosenWeapon, chosenRoom);
 
@@ -448,9 +520,19 @@ public class UIClueGame extends Application {
             }
         });
 
-        dialog.showAndWait();
+        dialog.showAndWait(); //opens your pop-up window and completely pauses the execution of the surrounding Java code until the user closes that pop-up
     }
 
+    /**
+     * The screen that shows to pass the screen to the correct person
+     * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
+     * 
+     * @param root the main container
+     * @param localSuggPlayer the player who made the OG suggestion
+     * @param respondent the player whose turn it is to look at their cards to disprove the suggestion
+     * @param cards the cards of the respondent
+     * @param stage a different window
+     */
     private void showPassDeviceScreen(StackPane root, Player localSuggPlayer, Player respondent, ArrayList<String> cards, javafx.stage.Stage stage) {
         root.getChildren().clear();
         VBox box = new VBox(20);
@@ -472,6 +554,16 @@ public class UIClueGame extends Application {
         root.getChildren().add(box);
     }
 
+    /**
+     * The screen for the respondent to see what card they want to show to localSuggPlayer
+     * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
+     * 
+     * @param root the main container
+     * @param localSuggPlayer the player who made the OG suggestion
+     * @param respondent the player whose turn it is to look at their cards to disprove the suggestion
+     * @param cards the cards of the respondent
+     * @param stagea different window
+     */
     private void showCardSelectionScreen(StackPane root, Player localSuggPlayer, Player respondent, ArrayList<String> cards, javafx.stage.Stage stage) {
         root.getChildren().clear();
         VBox box = new VBox(15);
@@ -507,6 +599,15 @@ public class UIClueGame extends Application {
         root.getChildren().add(box);
     }
 
+    /**
+     * Screen to show which player to give the screen back to
+     * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
+     * 
+     * @param root
+     * @param localSuggPlayer
+     * @param cardToShow
+     * @param stage
+     */
     private void showPassDeviceBackScreen(StackPane root, Player localSuggPlayer, String cardToShow, javafx.stage.Stage stage) {
         root.getChildren().clear();
         VBox box = new VBox(20);
@@ -525,6 +626,14 @@ public class UIClueGame extends Application {
         root.getChildren().add(box);
     }
 
+    /**
+     * Once the player confirms they are the right player, this method will show the cards for them to note down
+     * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
+     * 
+     * @param root
+     * @param evidenceCard
+     * @param stage
+     */
     private void showFinalCardReveal(StackPane root, String evidenceCard, javafx.stage.Stage stage) {
         root.getChildren().clear();
         VBox box = new VBox(20);
@@ -549,6 +658,10 @@ public class UIClueGame extends Application {
         root.getChildren().add(box);
     }
 
+    /**
+     * HELPER METHOD
+     * finishes the player's turn, and tells which player is next    
+     */
     private void wrapUpTurn() {
         // FIXED loop logic: cycle turns dynamically until discovering a player who isn't eliminated
         do {
@@ -568,6 +681,13 @@ public class UIClueGame extends Application {
         }
     }
 
+    /**
+     * HELPER MEtHOD
+     * Transitions between each screen (like fading in and out)
+     * NOTE: Stylistic element, generated by AI
+     * 
+     * @param nextScreen the screen
+     */
     private void fadeToNextScreen(javafx.scene.Node nextScreen) {
         Pane fadeOverlay = new Pane();
         fadeOverlay.setStyle("-fx-background-color: #0b1324;"); 
@@ -595,7 +715,15 @@ public class UIClueGame extends Application {
         fadeToDark.play();
     }
 
-    private void launchPreGameHandPreview(Stage stage, GameManager activeManager, int playerIndex) {
+    /**
+     * Recursive method, handles the entire pass and play, each player gets to see their cards
+     * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
+     * 
+     * @param stage
+     * @param activeManager the game manager
+     * @param playerIndex the player's index
+     */
+    private void passAndPlayPhase(Stage stage, GameManager activeManager, int playerIndex) {
         ArrayList<Player> sessionPlayers = activeManager.getPlayers(); 
 
         if (playerIndex >= sessionPlayers.size()) {
@@ -609,7 +737,7 @@ public class UIClueGame extends Application {
         root.setAlignment(Pos.CENTER);
         root.setStyle("-fx-background-color: #0b1324; -fx-padding: 40;");
 
-        // --- STATE 1: PASS DEVICE SCREEN ---
+        // STATE 1: PASS DEVICE SCREEN
         Label passLabel = new Label("PASS DEVICE TO: " + currentPlayer.getPlayerName().toUpperCase());
         passLabel.setStyle("-fx-text-fill: #deb86b; -fx-font-size: 24px; -fx-font-weight: bold;");
 
@@ -628,7 +756,7 @@ public class UIClueGame extends Application {
             rootContainer.getChildren().add(root);
         }
 
-        // --- STATE 2: REVEAL HAND SCREEN ---
+        // STATE 2: REVEAL HAND SCREEN
         confirmIdentityBtn.setOnAction(e -> {
             root.getChildren().clear(); 
 
@@ -675,7 +803,7 @@ public class UIClueGame extends Application {
                 if (playerIndex == sessionPlayers.size() - 1) {
                     fadeToNextScreen(buildBoardScreen(stage, activeManager));
                 } else {
-                    launchPreGameHandPreview(stage, activeManager, playerIndex + 1);
+                    passAndPlayPhase(stage, activeManager, playerIndex + 1);
                 }
             });
 
@@ -683,7 +811,12 @@ public class UIClueGame extends Application {
         });
     }
 
-    public static void main(String[] args) {
+
+/**
+ * the main method, runs the GUI part 
+ * 
+ * @param args
+ */    public static void main(String[] args) {
         launch(args);
     }
 }
