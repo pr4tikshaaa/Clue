@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import java.util.ArrayList;
-//This class creates the physical board
+
 public class FXBoardPanel extends Pane {
     private static final int TILE_SIZE = 25;
     private Canvas canvas;
@@ -60,7 +60,7 @@ public class FXBoardPanel extends Pane {
 
         drawBoard();
     }
-
+    
     /**
      * Based on the tile the player is on, this method will find the tiles that the player can move to (or room)
      * @param tile the tile the player is on
@@ -76,7 +76,6 @@ public class FXBoardPanel extends Pane {
         return null;
     }
 
-    
     /**
      * based on the character's name, it will give the correct color
      * 
@@ -86,13 +85,20 @@ public class FXBoardPanel extends Pane {
     private Color getCharacterColor(String characterName) {
         if (characterName == null) return Color.WHITE;
         switch (characterName.trim()) {
-            case "Miss Scarlet":    return Color.web("#e53935"); // Vibrant Crimson Red
-            case "Col. Mustard":    return Color.web("#fdd835"); // Deep Yellow
-            case "Mrs. Peacock":    return Color.web("#1e88e5"); // Royal Blue
-            case "Mr. Green":       return Color.web("#43a047"); // Emerald Forest Green
-            case "Prof. Plum":      return Color.web("#8e24aa"); // Classic Purple
-            case "Dr. Orchid":      return Color.web("#ff4dbb"); // Coral Orange / Pinkish White
-            default:                return Color.web("#deb86b"); // Fallback Gold Accent
+            case "Miss Scarlet":
+                return Color.web("#e53935"); 
+            case "Colonel Mustard":
+                return Color.web("#fdd835"); 
+            case "Mrs. Peacock":    
+                return Color.web("#1e88e5"); 
+            case "Mr. Green":       
+                return Color.web("#43a047"); 
+            case "Professor Plum":      
+                return Color.web("#8e24aa");
+            case "Dr. Orchid":      
+                return Color.web("#ff4dbb"); 
+            default:                
+                return Color.web("#deb86b"); 
         }
     }
 
@@ -128,16 +134,15 @@ public class FXBoardPanel extends Pane {
     /**
      * draws the board, and changes how it looks
      */
-    private void drawBoard() 
-    {
+    private void drawBoard() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); 
         
-        // Track unique rooms to prevent drawing text names repeatedly over every single room tile
         ArrayList<String> namedRoomsRenderList = new ArrayList<>();
 
-        // PART 1: the foundation: colors the walkways, and different colors for each room
-            //part 1 has stylistic elements, AI generated (to make the board look more aesthetic)
+
+        //Colors the walkways, and different colors for each room
+            //has stylistic elements, AI generated (to make the board look more aesthetic)
         //Loop goes through all the tiles on the board
         for (int r = 0; r < 24; r++) {
             for (int c = 0; c < 24; c++) {
@@ -145,31 +150,42 @@ public class FXBoardPanel extends Pane {
                 int x = c * TILE_SIZE;
                 int y = r * TILE_SIZE;
 
-                // 1. making all the doorways and walkways (Clean tan background)
+                //making all the doorways and walkways (Clean tan background)
                 if (tile.isWalkway() || tile.isDoorway()) {
                     gc.setFill(Color.web("#d2b48c"));
                     gc.fillRect(x, y, TILE_SIZE, TILE_SIZE);
 
-                // 2. changing the colers of each room
+                //changing the colors of each room
                 } else if (tile.getConnectedRoom() != null) {
                     String roomName = tile.getConnectedRoom().getName();
                     switch (roomName.replaceAll("\\s+", "")) {
-                        case "Kitchen":       gc.setFill(Color.web("#060b1e")); break; 
-                        case "Ballroom":      gc.setFill(Color.web("#0c1533")); break; 
-                        case "Conservatory":  gc.setFill(Color.web("#09112a")); break; 
-                        case "Study":         gc.setFill(Color.web("#050a1c")); break; 
-                        case "Hall":          gc.setFill(Color.web("#111a3e")); break; 
-                        case "BilliardRoom":  gc.setFill(Color.web("#0a1330")); break; 
-                        case "DiningRoom":    gc.setFill(Color.web("#040819")); break; 
-                        case "Lounge":        gc.setFill(Color.web("#0e173a")); break; 
-                        case "Library":       gc.setFill(Color.web("#081027")); break; 
-                        case "Cellar":        gc.setFill(Color.web("#161a24")); break; 
-                        default:              gc.setFill(Color.web("#0b1324")); break; 
+                        case "Kitchen":       
+                            gc.setFill(Color.web("#060b1e")); break; 
+                        case "Ballroom":      
+                            gc.setFill(Color.web("#0c1533")); break; 
+                        case "Conservatory":  
+                            gc.setFill(Color.web("#09112a")); break;
+                        case "Study":         
+                            gc.setFill(Color.web("#050a1c")); break; 
+                        case "Hall":          
+                            gc.setFill(Color.web("#111a3e")); break;
+                        case "BilliardRoom":  
+                            gc.setFill(Color.web("#0a1330")); break; 
+                        case "DiningRoom":    
+                            gc.setFill(Color.web("#040819")); break;
+                        case "Lounge":        
+                            gc.setFill(Color.web("#0e173a")); break; 
+                        case "Library":       
+                            gc.setFill(Color.web("#081027")); break; 
+                        case "Cellar":        
+                            gc.setFill(Color.web("#161a24")); break; 
+                        default:              
+                            gc.setFill(Color.web("#0b1324")); break; 
                     }
                     gc.fillRect(x, y, TILE_SIZE, TILE_SIZE);
 
                     // Room Walls
-                    gc.setStroke(Color.web("#1c2d5a"));
+                    gc.setStroke(Color.web("#FFFFFF"));
                     gc.setLineWidth(2);
                     if (r > 0 && gameBoard.getTile(r - 1, c).isWalkway()) gc.strokeLine(x, y, x + TILE_SIZE, y);
                     if (r < 23 && gameBoard.getTile(r + 1, c).isWalkway()) gc.strokeLine(x, y + TILE_SIZE, x + TILE_SIZE, y + TILE_SIZE);
@@ -177,7 +193,7 @@ public class FXBoardPanel extends Pane {
                     if (c < 23 && gameBoard.getTile(r, c + 1).isWalkway()) gc.strokeLine(x + TILE_SIZE, y, x + TILE_SIZE, y + TILE_SIZE);
                 }
 
-                // Grid lines layout overlay
+                // Grid lines
                 gc.setStroke(Color.rgb(255, 255, 255, 0.04));
                 gc.setLineWidth(1);
                 gc.strokeRect(x, y, TILE_SIZE, TILE_SIZE);
@@ -195,11 +211,9 @@ public class FXBoardPanel extends Pane {
                     if (!namedRoomsRenderList.contains(rawRoomName) && !rawRoomName.equalsIgnoreCase("Cellar")) {
                         namedRoomsRenderList.add(rawRoomName);
                         
-                        // Render room names shifted nicely inside bounds of their top-left initialization tiles
                         int textX = (c * TILE_SIZE) + 10;
                         int textY = (r * TILE_SIZE) + 20;
                         
-                        // Drop Shadow Text Effect
                         gc.setFill(Color.BLACK);
                         gc.fillText(rawRoomName.toUpperCase(), textX + 1, textY + 1);
                         gc.setFill(Color.web("#deb86b")); // Mansion Gold
@@ -209,7 +223,7 @@ public class FXBoardPanel extends Pane {
             }
         }
 
-        // PART 3: the hovering part
+        //  the hovering part
         if (hoveredTile != null) {
             Tile validTarget = getCorrespondingValidMove(hoveredTile);
 
@@ -230,7 +244,7 @@ public class FXBoardPanel extends Pane {
             }
         }
 
-        // PART 4: player tokens
+        //Player tokens
         // Reads coordinates directly from game state player collection data
         if (activePlayers != null) {
             for (Player p : activePlayers) {
@@ -238,7 +252,7 @@ public class FXBoardPanel extends Pane {
                     int x = p.getCol() * TILE_SIZE;
                     int y = p.getRow() * TILE_SIZE;
                     
-                    // Fills piece tracking color based on character names mapping directly
+                    // Fills piece tracking color based on character names
                     gc.setFill(getCharacterColor(p.getCharacterName())); 
                     gc.fillOval(x + 4, y + 4, TILE_SIZE - 8, TILE_SIZE - 8);
                     
