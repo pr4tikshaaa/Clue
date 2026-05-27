@@ -13,35 +13,20 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import java.io.File;
 import java.util.ArrayList;
-import javax.smartcardio.Card;
 
-/**
- * The main GUI class, handels the home screen
- */
 public class UIClueGame extends Application {
-    /** Swaps views inside this master container*/
     private StackPane rootContainer;
-    /** holds list of players playing*/
     private ArrayList<Player> players = new ArrayList<>();
-    /**number of players playing stored in here */
     private int numPlayers;
-    /**the characters to choose from */
     private final String[] suspectsList = {" ", "Colonel Mustard", "Miss Scarlet", "Professor Plum", "Mr. Green", "Mrs. Peacock", "Dr. Orchid"};
-    /**the list of rooms */
     private final String[] roomsList = {"Kitchen", "Ballroom", "Conservatory", "Dining Room", "Billiard Room", "Library", "Lounge", "Hall", "Study"};
 
-    /**creating new gameManager to handle the overall game logic */
     private GameManager gameManager;
-    /**creating a new board */
     private FXBoardPanel visualBoard;
-    /**For some of the cues to let people know what to do next */
     private Label statusLabel;
     
-    /**starts your turn */
     private Button startTurnBtn;
-    /**rolls the dice */
     private Button rollDiceBtn;
-    /**to make an accusation */
     private Button makeAccusationBtn;
 
     @Override
@@ -57,6 +42,9 @@ public class UIClueGame extends Application {
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
         rootContainer.getChildren().add(buildHomeScreen());
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
      /**
