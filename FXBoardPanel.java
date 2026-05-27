@@ -7,16 +7,28 @@ import javafx.scene.text.FontWeight;
 import java.util.ArrayList;
 
 public class FXBoardPanel extends Pane {
+    /**the final size of each tile */
     private static final int TILE_SIZE = 25;
+    /** a surface to draw shapes, text, and images manually*/
     private Canvas canvas;
+    /**handles the board logic */
     private Board gameBoard;
-    private ArrayList<Player> activePlayers; // Reference to track player positions dynamically
+    /**Reference to track player positions dynamically*/
+    private ArrayList<Player> activePlayers; 
     
+    /**list of valid moves */
     private ArrayList<Tile> validMoves = new ArrayList<>();
+    /**holds a tile */
     private Tile hoveredTile = null; 
+    /**instructs what the tile should do (what to do when clicked)*/
     private java.util.function.Consumer<Tile> onTileClickedHandler;
 
-    // Updated Constructor to receive your player setup session cleanly
+    
+    /**
+     * Updated Constructor to receive your player setup session cleanly
+     * @param board handles the board logic
+     * @param gamePlayers the list of players
+     */
     public FXBoardPanel(Board board, ArrayList<Player> gamePlayers) {
         this.gameBoard = board;
         this.activePlayers = gamePlayers;
