@@ -393,6 +393,8 @@ public class UIClueGame extends Application {
                 exitBtn.getStyleClass().add("sleek-button");
                 exitBtn.setOnAction(ev -> {
                     dialog.close();
+                     Stage stage = (Stage) rootContainer.getScene().getWindow();
+                    stage.close();
                 });
                 resultsBox.getChildren().addAll(winLabel, detailLabel, exitBtn);
             } else {
