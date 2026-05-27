@@ -71,7 +71,7 @@ public class UIClueGame extends Application {
                 logoView.setFitHeight(200);  
                 logoContainer.getChildren().add(logoView);
             } else {
-                Label fallbackLabel = new Label("[ LOGO PLACEHOLDER ]");
+                Label fallbackLabel = new Label("CLUE");
                 fallbackLabel.getStyleClass().add("title-text");
                 fallbackLabel.setStyle("-fx-font-size: 54px;");
                 logoContainer.getChildren().add(fallbackLabel);
