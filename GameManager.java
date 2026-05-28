@@ -30,13 +30,22 @@ public class GameManager {
         board = new Board();
         cardDeck.dealCards(players);
 
-        if (players.size() > 0) board.setPlayer(players.get(0), 23, 9);
-        if (players.size() > 1) board.setPlayer(players.get(1), 23, 14);
-        if (players.size() > 2) board.setPlayer(players.get(2), 17, 0);
-        if (players.size() > 3) board.setPlayer(players.get(3), 0, 16);
-        if (players.size() > 4) board.setPlayer(players.get(4), 7, 23);
-        if (players.size() > 5) board.setPlayer(players.get(5), 16, 23); //at row 18, it was in a room, had to change to 16
-
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).getCharacterName().equals("Dr. Orchid")) {
+                board.setPlayer(players.get(i), 23, 14);
+            } else if (players.get(i).getCharacterName().equals("Colonel Mustard")) {
+                board.setPlayer(players.get(i), 7, 23);
+            } else if (players.get(i).getCharacterName().equals("Miss Scarlet")) {
+                board.setPlayer(players.get(i), 0, 16);
+            } else if (players.get(i).getCharacterName().equals("Professor Plum")) {
+                board.setPlayer(players.get(i), 4, 0);
+            } else if (players.get(i).getCharacterName().equals("Mr. Green")) {
+                board.setPlayer(players.get(i), 23, 9);
+            } else if (players.get(i).getCharacterName().equals("Mrs. Peacock")) {
+                board.setPlayer(players.get(i),17, 0);
+            }
+        }
+        
         board.printBoard();
     }
 
@@ -147,7 +156,7 @@ public class GameManager {
 
         for (int i = 0; i < currentPlayerIndex; i++) {
             for (Card c : players.get(i).getHand()) {
-                if (c.equals(suspectGuess) || c.equals(weaponGuess) || c.equals(room)) {
+                if (c.equals(suspectGuess) || c.equals(weaponGuess) || c.equals(roomCard)) {
                     return result + "\nCard is in play. Pass to Player " + (i+1);
                 }
             }

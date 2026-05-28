@@ -15,7 +15,7 @@ public class FXBoardPanel extends Pane {
     /**handles the board logic */
     private Board gameBoard;
     /**Reference to track player positions dynamically*/
-    private ArrayList<Player> activePlayers; 
+    private ArrayList<Player> activePlayers;
     
     /**list of valid moves */
     private ArrayList<Tile> validMoves = new ArrayList<>();
@@ -23,7 +23,6 @@ public class FXBoardPanel extends Pane {
     private Tile hoveredTile = null; 
     /**instructs what the tile should do (what to do when clicked)*/
     private java.util.function.Consumer<Tile> onTileClickedHandler;
-
     
     /**
      * Updated Constructor to receive your player setup session cleanly
@@ -81,15 +80,23 @@ public class FXBoardPanel extends Pane {
      */
     private Tile getCorrespondingValidMove(Tile tile) {
         for (Tile move : validMoves) {
-            if (move == tile) return move;
-            if (tile.getConnectedRoom() != null && move.getConnectedRoom() == tile.getConnectedRoom()) {
-                return move; 
+            if (move == tile) {
+                return move;
             }
         }
+        
+        if (tile.isRoom()) {
+            for (Tile move : validMoves) {
+                if (move.isRoom() && move.getConnectedRoom() == tile.getConnectedRoom()) {
+                    return move;
+                }
+            }
+        }
+
         return null;
     }
 
-    /**
+     /**
      * based on the character's name, it will give the correct color
      * 
      * @param characterName the character's name
@@ -122,7 +129,7 @@ public class FXBoardPanel extends Pane {
     public void setOnTileClickedListener(java.util.function.Consumer<Tile> listener) {
         this.onTileClickedHandler = listener;
     }
-
+    
     /**
      * Prepares and visually updates the board to show a player where they can move.
      * 
@@ -134,7 +141,7 @@ public class FXBoardPanel extends Pane {
     }
 
     /**
-     * Removes the highlights.
+     * removes the highlights
      */
     public void clearHighlights() {
         this.validMoves.clear();
@@ -143,12 +150,12 @@ public class FXBoardPanel extends Pane {
     }
 
     /**
-     * Updates the physical location of the player (when they move to a new location).
+     * updates the physical location of the player (when they move to a new location)
      */
     public void refreshPlayerPositions() {
         drawBoard();
     }
-
+    
     /**
      * Draws the board. Creates the tiles (each a different color based on their "name" which is just the room name).
      */
@@ -215,10 +222,16 @@ public class FXBoardPanel extends Pane {
                 gc.setStroke(Color.rgb(255, 255, 255, 0.04));
                 gc.setLineWidth(1);
                 gc.strokeRect(x, y, TILE_SIZE, TILE_SIZE);
+
+                gc.setStroke(Color.WHITE);
+                gc.setLineWidth(2);
+                
+                gc.strokeLine(1 * TILE_SIZE, 11 * TILE_SIZE, 2 * TILE_SIZE, 11 * TILE_SIZE);
+                gc.strokeLine(3 * TILE_SIZE, 12 * TILE_SIZE, 4 * TILE_SIZE, 12 * TILE_SIZE);
             }
         }
 
-        // PART 2: the labels: writing the name for each room
+        //the labels: writing the name for each room
             //NOTE: some stylistic elements are AI generated
         gc.setFont(Font.font("System", FontWeight.BOLD, 10));
         for (int r = 0; r < 24; r++) {
@@ -256,7 +269,7 @@ public class FXBoardPanel extends Pane {
                     gc.setLineWidth(1.5);
                     gc.strokeRect(x + 0.5, y + 0.5, TILE_SIZE - 1, TILE_SIZE - 1);
                 } 
-                else if (hoveredTile.getConnectedRoom() != null) {
+                else if (hoveredTile.isRoom()) {
                     drawHighlightsRoom(gc, validTarget.getConnectedRoom());
                 }
             }
@@ -281,7 +294,7 @@ public class FXBoardPanel extends Pane {
             }
         }
     }
-
+    
     /**
      * Helper method for drawBoard(). Highlights entire rooms.
      * 
@@ -298,7 +311,7 @@ public class FXBoardPanel extends Pane {
             for (int c = 0; c < 24; c++) 
             {
                 Tile tile = gameBoard.getTile(r, c);
-                if (tile.getConnectedRoom() == targetRoom) 
+                if (tile.isRoom() && tile.getConnectedRoom() == targetRoom)
                 {
                     int x = c * TILE_SIZE;
                     int y = r * TILE_SIZE;
@@ -310,5 +323,6 @@ public class FXBoardPanel extends Pane {
                 }
             }
         }
+        
     }
 }

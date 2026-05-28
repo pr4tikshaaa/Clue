@@ -245,9 +245,20 @@ public class Board {
 
         visited[row][col] = true;
 
+        if (current.isDoorway() && stepsLeft > 0) {
+            Room room = current.getConnectedRoom();
+            
+            if (room != null) {
+                validMoves.add(room.getPlayerSpot());
+            }
+        }
+
         if (stepsLeft == 0) {
             if (current.isWalkway() || current.isDoorway()) {
                 validMoves.add(current);
+
+                visited[row][col] = false;
+                return;
             } else if (current.isRoom()) {
                 boolean alreadyAdded = false;
 
@@ -270,22 +281,7 @@ public class Board {
         ArrayList<Tile> neighbors = getNeighbors(current);
 
         for (Tile next : neighbors) {
-            if (next.isRoom() && !current.isRoom()) {
-                boolean alreadyAdded = false;
-
-                for (Tile t : validMoves) {
-                    if (t.getConnectedRoom() == next.getConnectedRoom()) {
-                        alreadyAdded = true;
-                        break;
-                    }
-                }
-
-                if (!alreadyAdded) {
-                    validMoves.add(next);
-                }
-            } else {
-                findMoves(next.getRow(), next.getCol(), stepsLeft - 1, visited);
-            }
+            findMoves(next.getRow(), next.getCol(), stepsLeft -1, visited);
         }
 
         visited[row][col] = false;
@@ -318,7 +314,7 @@ public class Board {
 
         Tile clickedTile = board[r][c];
 
-        if (clickedTile.getConnectedRoom() != null) {
+        if (clickedTile.isRoom()) {
             Room room = clickedTile.getConnectedRoom();
 
             Tile spot = room.getPlayerSpot();
@@ -404,7 +400,12 @@ public class Board {
 
         Tile target = board[r][c];
 
-        if (target.isWalkway() || target.isDoorway()) {
+        if (target.isWalkway()) {
+            neighbors.add(target);
+            return;
+        }
+
+        if (target.isDoorway()) {
             neighbors.add(target);
             return;
         }
