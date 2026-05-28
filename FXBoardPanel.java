@@ -6,6 +6,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import java.util.ArrayList;
 
+/**Creating the physical board (GUI) */
 public class FXBoardPanel extends Pane {
     /**the final size of each tile */
     private static final int TILE_SIZE = 25;
@@ -76,7 +77,7 @@ public class FXBoardPanel extends Pane {
     /**
      * Based on the tile the player is on, this method will find the tiles that the player can move to (or room)
      * @param tile the tile the player is on
-     * @return the tiles they can move
+     * @return If a move in validMoves is the exact same object as the input tile, it returns that move. If they aren't, it checks if both tiles are connected to the same room. If they share a non-null connected room, it returns that move. Otherwise, null.
      */
     private Tile getCorrespondingValidMove(Tile tile) {
         for (Tile move : validMoves) {
@@ -92,7 +93,7 @@ public class FXBoardPanel extends Pane {
      * based on the character's name, it will give the correct color
      * 
      * @param characterName the character's name
-     * @return the color
+     * @return the color of the character
      */
     private Color getCharacterColor(String characterName) {
         if (characterName == null) return Color.WHITE;
@@ -114,13 +115,18 @@ public class FXBoardPanel extends Pane {
         }
     }
 
+    /**
+     * Sets up an event listener to handle what happens when a player clicks a tile.
+     * @param listener Takes a Tile as input and runs a block of code. Stores it in this.onTileClickedHandler so the game can trigger it later whenever a click occurs.
+     */
     public void setOnTileClickedListener(java.util.function.Consumer<Tile> listener) {
         this.onTileClickedHandler = listener;
     }
 
     /**
+     * Prepares and visually updates the board to show a player where they can move.
      * 
-     * @param tiles
+     * @param tiles The tiles in the board.
      */
     public void highlightPossibleMoves(ArrayList<Tile> tiles) {
         this.validMoves = tiles;
@@ -128,7 +134,7 @@ public class FXBoardPanel extends Pane {
     }
 
     /**
-     * removes the highlights
+     * Removes the highlights.
      */
     public void clearHighlights() {
         this.validMoves.clear();
@@ -137,14 +143,14 @@ public class FXBoardPanel extends Pane {
     }
 
     /**
-     * updates the physical location of the player (when they move to a new location)
+     * Updates the physical location of the player (when they move to a new location).
      */
     public void refreshPlayerPositions() {
         drawBoard();
     }
 
     /**
-     * draws the board, and changes how it looks
+     * Draws the board. Creates the tiles (each a different color based on their "name" which is just the room name).
      */
     private void drawBoard() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -277,12 +283,10 @@ public class FXBoardPanel extends Pane {
     }
 
     /**
-     * helper method for drawBoard()
-     *      mainly cause drawBoard() was to crowded
-     * highlights rooms
+     * Helper method for drawBoard(). Highlights entire rooms.
      * 
-     * @param gc
-     * @param targetRoom room to be highlighted
+     * @param gc The graphics context used to draw the room outlines.
+     * @param targetRoom Room to be highlighted.
      */
     private void drawHighlightsRoom(GraphicsContext gc, Room targetRoom)
     {

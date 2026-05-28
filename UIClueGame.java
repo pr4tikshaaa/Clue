@@ -15,32 +15,32 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * The main GUI class, handels the home screen
+ * The main GUI class, handles the home screen and player setup.
  */
 public class UIClueGame extends Application {
     /** Swaps views inside this master container*/
     private StackPane rootContainer;
-    /** holds list of players playing*/
+    /** Holds the list of players playing*/
     private ArrayList<Player> players = new ArrayList<>();
-    /**number of players playing stored in here */
+    /**Number of players playing stored in here */
     private int numPlayers;
-    /**the characters to choose from */
+    /**The characters to choose from */
     private final String[] suspectsList = {" ", "Colonel Mustard", "Miss Scarlet", "Professor Plum", "Mr. Green", "Mrs. Peacock", "Dr. Orchid"};
-    /**the list of rooms */
+    /**The list of rooms */
     private final String[] roomsList = {"Kitchen", "Ballroom", "Conservatory", "Dining Room", "Billiard Room", "Library", "Lounge", "Hall", "Study"};
 
-    /**creating new gameManager to handle the overall game logic */
+    /**Creating a new gameManager to handle the overall game logic */
     private GameManager gameManager;
-    /**creating a new board */
+    /**Creating a new physical board */
     private FXBoardPanel visualBoard;
     /**For some of the cues to let people know what to do next */
     private Label statusLabel;
     
-    /**starts your turn */
+    /**Starts your turn */
     private Button startTurnBtn;
-    /**rolls the dice */
+    /**Rolls the dice */
     private Button rollDiceBtn;
-    /**to make an accusation */
+    /**To make an accusation */
     private Button makeAccusationBtn;
 
     @Override
@@ -62,8 +62,7 @@ public class UIClueGame extends Application {
     }
 
      /**
-     * VBox = Vertical Box
-     *  used to layer items in a vertical layout
+     * Used to layer items in a vertical layout (VBox = Vertical Box)
      * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
      *      others are specified
      *  
@@ -125,8 +124,8 @@ public class UIClueGame extends Application {
     }
 
     /**
-     * Method to choose how many players are playing
-     * the field numPlayers changes to the value sorted by the dropdown comboPlayers
+     * Method to choose how many players are playing.
+     * The field numPlayers changes to the value sorted by the dropdown comboPlayers.
      * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
      * 
      * @return a VBox containing layout of number of players screen
@@ -161,10 +160,9 @@ public class UIClueGame extends Application {
     }
 
      /**
-     * Creating a new player based on totalPlayers, and adding to field players
-     * HBox = Horizontal Box
-     *  layers items horizontally
-     * Uses helper method checkCharacters to make sure same characters are not chosen
+     * Creating a new player based on totalPlayers, and adding to field players (HBox = Horizontal Box)
+     * Layers items horizontally.
+     * Uses helper method checkCharacters to make sure same characters are not chosen.
      * NOTE: There are some stylistic elements in this method that were AI generated (setting font/background color, size)
      * 
      * @param totalPlayers the number of players chosen
@@ -345,7 +343,7 @@ public class UIClueGame extends Application {
 
     /**
      * Start the "Accusation" part
-     *      checking to see if their accusation is correct, if not then take the actions needed
+     *      Checking to see if their accusation is correct, if not then take the actions needed
      * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
      * 
      * @param accusingPlayer the player that wants to guess
@@ -473,15 +471,15 @@ public class UIClueGame extends Application {
     }
 
     /**
-     * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
      * The method that starts the suggestion flow
-     * creates this in a new empty window, seperate from the main board
+     * Creates this in a new empty window, seperate from the main board
      * Uses the method from GameManager, findDisprovingPlayer, which finds first player who can disprove a suggestion
      *      and getDisprovingCards, which gets all cards the disproving player is able to disprove suggestion with
-     * Uses wrapUpTurn();, helper method
+     * Uses wrapUpTurn(), helper method
+     * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
      * 
      * @param suggestingPlayer the player who is suggesting
-     * @param room the room they are in
+     * @param room the room the player is in
      */
     private void launchSuggestionFlow(Player suggestingPlayer, Room room) {
         javafx.stage.Stage dialog = new javafx.stage.Stage();
@@ -556,14 +554,14 @@ public class UIClueGame extends Application {
     }
 
     /**
-     * The screen that shows to pass the screen to the correct person
+     * The screen that shows to pass the screen to the correct person (Cue)
      * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
      * 
      * @param root the main container
      * @param localSuggPlayer the player who made the OG suggestion
      * @param respondent the player whose turn it is to look at their cards to disprove the suggestion
      * @param cards the cards of the respondent
-     * @param stage a different window
+     * @param stage the active window passed forward to be closed at the end of the reveal sequence
      */
     private void showPassDeviceScreen(StackPane root, Player localSuggPlayer, Player respondent, ArrayList<String> cards, javafx.stage.Stage stage) {
         root.getChildren().clear();
@@ -587,14 +585,14 @@ public class UIClueGame extends Application {
     }
 
     /**
-     * The screen for the respondent to see what card they want to show to localSuggPlayer
+     * The screen for the respondent to see what card they want to show to localSuggPlayer (Cue)
      * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
      * 
      * @param root the main container
      * @param localSuggPlayer the player who made the OG suggestion
      * @param respondent the player whose turn it is to look at their cards to disprove the suggestion
      * @param cards the cards of the respondent
-     * @param stagea different window
+     * @param stage the active window passed forward to be closed at the end of the reveal sequence
      */
     private void showCardSelectionScreen(StackPane root, Player localSuggPlayer, Player respondent, ArrayList<String> cards, javafx.stage.Stage stage) {
         root.getChildren().clear();
@@ -632,13 +630,13 @@ public class UIClueGame extends Application {
     }
 
      /**
-     * Screen to show which player to give the screen back to
+     * Screen to show which player to give the screen back to (Cue)
      * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
      * 
-     * @param root
-     * @param localSuggPlayer
-     * @param cardToShow
-     * @param stage
+     * @param root the main container
+     * @param localSuggPlayer the player who made the OG suggestion
+     * @param cardToShow cards chosen, to be shown to the localSuggPlayer
+     * @param stage the active window passed forward to be closed at the end of the reveal sequence
      */
     private void showPassDeviceBackScreen(StackPane root, Player localSuggPlayer, String cardToShow, javafx.stage.Stage stage) {
         root.getChildren().clear();
@@ -662,9 +660,9 @@ public class UIClueGame extends Application {
      * Once the player confirms they are the right player, this method will show the cards for them to note down
      * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
      * 
-     * @param root
-     * @param evidenceCard
-     * @param stage
+     * @param root the main container
+     * @param evidenceCard The card to be shown to the right player
+     * @param stage the popup window (stage) to be closed when ending the turn
      */
     private void showFinalCardReveal(StackPane root, String evidenceCard, javafx.stage.Stage stage) {
         root.getChildren().clear();
@@ -750,7 +748,7 @@ public class UIClueGame extends Application {
      * Recursive method, handles the entire pass and play, each player gets to see their cards
      * NOTE: There are some stylistic elements in this method that were AI generated (like setting font/background color, size)
      * 
-     * @param stage
+     * @param stage the primary JavaFX window used to host and switch game screens
      * @param activeManager the game manager
      * @param playerIndex the player's index
      */
@@ -843,7 +841,7 @@ public class UIClueGame extends Application {
     }
 
     /**
-     * the main method, runs the GUI part 
+     * The main method, runs the GUI part 
      * @param args
      */
     public static void main(String[] args) {
